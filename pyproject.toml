@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "causalidad-uba"
+version = "0.1.0"
+description = "Notebooks de la materia de Causalidad (UBA)"
+authors = ["matmoran"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.15"
+pandas = "^3.0.5"
+numpy = ">=1.24,<2.5"
+scipy = "^1.18.0"
+matplotlib = "^3.11.1"
+statsmodels = "^0.14.6"
+jupyter = "^1.1.1"
+ipykernel = "^7.3.0"
+pymc = ">=5.10,<6.0"
+arviz = ">=0.17,<1.0"
+
+
+[[tool.poetry.source]]
+name = "fury"
+url = "https://pypi.artifacts.furycloud.io/simple"
+priority = "primary"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

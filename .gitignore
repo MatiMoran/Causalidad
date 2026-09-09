@@ -1,0 +1,6 @@
+# Python venv (provided by nix-shell)
+.venv/
+
+# Python bytecode
+__pycache__/
+*.py[cod]

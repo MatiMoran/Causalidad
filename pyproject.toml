@@ -17,6 +17,7 @@ jupyter = "^1.1.1"
 ipykernel = "^7.3.0"
 pymc = ">=5.10,<6.0"
 arviz = ">=0.17,<1.0"
+mermaid-py = "^0.8.4"
 
 
 [build-system]

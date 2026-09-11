@@ -2064,6 +2064,21 @@ files = [
 ]
 
 [[package]]
+name = "mermaid-py"
+version = "0.8.4"
+description = "Python Interface for the Popular mermaid-js Library, Simplified for Diagram Creation."
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "mermaid_py-0.8.4-py3-none-any.whl", hash = "sha256:6e025c93c1ea7ce333aa60711e79ed166884376122516e3c52cf072e48d70791"},
+    {file = "mermaid_py-0.8.4.tar.gz", hash = "sha256:4676246ad32c4e9206d60af569f68ba7eab81e425d071fba01355b1cc6bba8f5"},
+]
+
+[package.dependencies]
+requests = ">=2.32.5"
+
+[[package]]
 name = "minikanren"
 version = "1.0.5"
 description = "Relational programming in Python"
@@ -3813,4 +3828,4 @@ test = ["hypothesis", "packaging", "preliz (>=0.19)", "pytest", "pytest-cov", "s
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<3.15"
-content-hash = "ff50fc5c62630ff0d87ec21e8deefaf4a8eac29f418aefc7ab9ebc191f990964"
+content-hash = "8d5ca0d41a7a5726c393af9fd52c89de7c9751ac9f46d3f7cece2da717ef3a04"

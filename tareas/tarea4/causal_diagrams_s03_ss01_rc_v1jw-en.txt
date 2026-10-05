@@ -1,0 +1,45 @@
+MIGUEL HERNAN: Cigarette smoking is one of the most important global health
+problems.
+The World Health Organization estimates that tobacco
+kills about 6 million people each year.
+Cigarette smoking has a causal effect on many cancers
+and heart disease, stroke, respiratory diseases, you name it.
+But everybody knows this, right?
+And yet for decades cigarette ads showed tough, healthy men smoking.
+But reality is something hard to argue against.
+At least four Marlboro men died of smoking related diseases.
+And some well-known Hollywood actors also advertised cigarettes.
+One died of cancer, the other of dementia,
+which begs the question: does smoking have a causal effect
+on the risk of dementia.
+There are biological reasons why smoking may
+increase the risk of at least some forms of dementia.
+However, we will never have a randomized trial of cigarette smoking.
+Fortunately, such unethical trial is not allowed.
+That means that we'll have to rely on observational data only.
+In fact, several observational prospective studies
+of smoking and dementia have been conducted since the 1990s.
+However, the findings of these observational studies
+vary dramatically.
+Some studies found a higher risk of dementia in smokers than in nonsmokers.
+Other studies found the opposite.
+Can we interpret any of these associations as the effect of smoking
+on dementia?
+And if so, what's the answer?
+Does smoking cause or prevent dementia?
+And most importantly, why do results differ across studies?
+One possibility is uncontrolled confounding
+in some of the studies, for example, by alcohol.
+People who become cigarette smokers also tend to drink more alcohol.
+If alcohol increases the risk of dementia,
+then we would expect to find an association between smoking
+and dementia, even if smoking had no effect on dementia.
+But it looks like many observational studies of smoking and dementia
+did adjust for the most important confounders.
+Then why did the smokers have a higher risk of dementia in some studies
+and a lower risk of dementia in other studies?
+Let me give you a hint.
+Perhaps it has to do with the selection of individuals
+in each of these studies.
+We will return to this problem at the end of this lesson.
+And by then you will be able to explain what's going on here.

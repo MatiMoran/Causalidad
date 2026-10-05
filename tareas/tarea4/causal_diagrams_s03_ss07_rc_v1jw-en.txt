@@ -1,0 +1,83 @@
+MIGUEL HERNAN: Let's go back to the problem
+we discussed at the start of this lesson:
+the findings on follow-up studies on smoking and dementia vary dramatically.
+These are all studies that selected smokers and nonsmokers at some time
+during their lifetimes and followed them until they developed dementia or died.
+Yet, some studies found a higher risk of dementia in smokers than in nonsmokers.
+And other studies found the opposite.
+Specifically, the ratio of the rate of dementia in smokers and nonsmokers,
+the Rate Ratio, range from about 0.4 to 1.4.
+From a 60% lower risk of dementia in smokers
+to a 40% higher risk of dementia in smokers compared with nonsmokers.
+The results were even more extreme for Alzheimer's disease,
+a common type of dementia.
+Here, the Rate Ratio ranged from about 0.3 to 2.7,
+from a 70% lower risk of Alzheimer's disease in smokers
+to a 170% higher risk of Alzheimer's disease
+in smokers compared with nonsmokers.
+Why?
+These discrepant results cannot be fully explained by chance or by variations
+in confounding control across studies.
+Could they be explained by selection bias?
+Certainly, these studies don't have the same selection criteria.
+For example, the participants in some studies
+are older than in other studies.
+The minimum age at baseline ranges from 55 to 75 years across studies.
+Could this age difference have something to do
+with the difference in the estimates?
+Actually, the answer is yes.
+The Rate Ratio of dementia drops from 1.4
+for studies with a minimum age of 55 to 64 years, to 1.3 for 65 to 74 years,
+to 0.7 for 75 years or more.
+That is, from a 40% higher risk of dementia
+in smokers to a 30% lower risk of dementia
+in smokers compared with nonsmokers.
+And the Rate Ratio of Alzheimer's disease
+drops from 1.7 for studies for 55 to 64 years, to 1.2 for 65 to 74 years,
+and 2.5 for 75 or more years.
+That is from a 70% higher risk of dementia
+in smokers to a 50% lower risk of dementia
+in smokers compared with nonsmokers.
+To see what is going on, we can draw a causal graph.
+If smoking is represented by the variable A and dementia
+by the variable Y, the arrow from A to Y represents a possible causal effect
+of smoking on dementia.
+In the studies with younger people, smoking
+appears to increase the risk of dementia.
+Now, smoking also affects the risk of death.
+The variable C represents death.
+And the variable U represents all the causes shared by death and dementia,
+for example, risk factors for cardiovascular disease.
+Does this structure look familiar?
+The studies that select persons aged 75 years or older
+are conditioning on having survived at least until age 75 years.
+That is, they're conditioning on a particular value of the collider C.
+And that conditioning induces selection bias
+that appears to result in a very strong inverse association between smoking
+and dementia.
+That is, the effect of smoking is probably harmful overall,
+but looks beneficial at older ages because of selection bias.
+Another way of thinking about this, most smokers
+who are susceptible to developing dementia do so by age 75.
+Therefore, the group of 75-year-olds without dementia
+is depleted of susceptible smokers.
+In this older age groups, being a smoker is
+a marker of being relatively immune to the effects of cigarette smoking
+on dementia.
+In this example, C represents censoring by death.
+And death is referred to as a competing event for dementia.
+Competing, because once a person dies we will never
+know whether she was going to develop dementia in the future.
+The structure of selection bias due to competing risk
+is the same as the structure for selection bias due to differential loss
+to follow up.
+And in fact, this form of selection bias is everywhere.
+The causal graph for smoking and dementia in older people that we just
+saw is also essentially the same as the causal graph for estrogens
+and endometrial cancer in lesson one.
+And we will see more examples of bias that
+can be represented by this structure later in the course.
+The take-home message is that once we learn
+to identify the graphical structure of the bias,
+we can apply it to many different types of problems
+without having to start from scratch each time.

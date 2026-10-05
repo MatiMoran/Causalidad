@@ -1,0 +1,70 @@
+MIGUEL HERNAN: Selection bias is everywhere.
+Every time we try to estimate the causal effect of certain treatment
+or exposure, A, on an outcome, Y, we will be worried about selection bias.
+Selection bias is feared when making inferences
+from observational data, of course, but also
+when conducting and analyzing randomized experiments.
+And depending on the research setting, the bias receives different names.
+For example, some common names for selection bias
+are inappropriate selection of controls, Berkson's bias, loss to follow-up,
+non-response bias, missing data bias, volunteer bias, self-selection bias,
+healthy worker effect, et cetera.
+All these biases will lead to incorrect estimates of causal effect.
+And in all cases the bias is due to the process by which individuals or study
+units are selected into the analysis.
+Before we continue, there is something important we need to clarify.
+Not all forms of selection create selection bias.
+That is a big difference with confounding, the source of bias
+that we discussed in the previous lesson.
+Confounding, the presence of common causes of treatment and outcome,
+always leads to bias, to incorrect estimates of causal effect.
+In contrast, selection doesn't always lead to bias, to incorrect estimates.
+For example, some forms of selection only
+create bias if the treatment affects the outcome.
+That is if there is an arrow from A to Y.
+But these forms of selection do not create bias
+if the treatment has a zero effect, a null effect on the outcome.
+That is if there is no arrow from A to Y.
+This means that if treatment has a non-null effect on Y,
+the effect estimate will be incorrect.
+But on the other hand, if the true effect of A and Y is null,
+then the effect estimate will be correct, will be zero.
+Here we're not going to consider those forms of selection.
+Rather, we're going focus on the type of selection
+that creates bias in all cases, whether the treatment has
+a null or a non-null effect on the outcome.
+When this second type of selection occurs,
+the effect estimate will always be incorrect.
+In fact, even if treatment A has no effect on Y,
+we will find an association between A and Y.
+So we will say that there is selection bias even under the null.
+I didn't tell you, but in lesson 1, we already
+discussed the structure of selection bias under the null.
+The bias is the consequence of conditioning
+on a common effect of treatment and outcome
+or, as we will see, on a common effect of a cause of the treatment
+and a cause of the outcome.
+For example, in the causal diagram with arrows from treatment A and outcome
+Y into C, conditioning on the selection node C, a collider,
+will introduce bias even under the null.
+In lesson 1, we saw a couple of examples of selection bias under the null.
+Remember the example of the genetic and environmental determinants of cancer.
+The bias arose because of conditioning or stratifying on a collider.
+The collider was cancer, which is a common effect
+of the genetic and environmental determinants.
+Selecting a stratum of collider for the analysis
+creates an association, a bias.
+For this reason, selection bias under the null
+is also referred to as collider stratification bias.
+Now technically it is mathematically possible
+that no bias will arise in one of the strata of the collider.
+But here, we'll ignore that for simplicity.
+OK, in this lesson, we're going to discuss
+many examples of selection bias.
+In fact, that is how we're going to present causal diagrams to describe
+selection bias by example.
+And in all the examples, we will draw causal diagrams
+with no arrow from treatment A to outcome Y.
+That will help us see that the selection bias will arise,
+even when the effect is null.
+Now we are ready to start seeing some of those examples.

@@ -1,0 +1,121 @@
+MIGUEL HERNAN: There's no selection bias without selection.
+And selection is, of course, present in all studies.
+But for selection to cause bias under the null,
+it needs to be related to both treatment A and outcome Y.
+For example, in the causal graph with arrows from A and Y to the collider C,
+there is selection bias, if we condition on both individuals or study units with
+certain values of C --
+that is, if we only select into the analysis individuals
+with certain values of C. In this case, the bias
+requires the presence of an arrow from A to C, an arrow from Y to C,
+and the fact that we are conditioning on C.
+Some study designs always include an arrow from Y
+to C, because under these designs, the study subjects
+are selected according to the value of their outcomes.
+Therefore, when we use these studies with outcome-based selection,
+the possibility of selection bias is especially worrisome,
+because the arrow from Y to C is already present, and we are conditioning on C.
+Therefore, we only need an additional arrow from A
+to C for the bias to arise.
+Probably the most widely-used of these designs with outcome-based selection
+is the case-control design.
+Case-control studies are often used by epidemiologists
+to estimate causal effects of A and Y. They
+do so when very large studies are not possible or are not realistic.
+For example, suppose we want to confirm that hormone therapy
+A has no effect on lung cancer Y in women after menopause.
+So we have a causal diagram with the variables A and Y. Ideally,
+we would identify a large population of women--
+say, all women who live in Boston.
+We classify them into two groups--
+those who start hormone therapy--
+A equals 1-- and those who don't--
+A equals 0-- and then follow them for 20 years to find out whether the groups
+have a different risk of cancer--
+Y equals 1.
+For simplicity, let's just say that there is no confounding here.
+The problem with this study design--
+this follow-up study-- is that it may not be feasible,
+because we don't have the means, the money,
+the time to enroll all women in Boston in our study
+and follow them for 20 years.
+Rather, we can sample some of these women using an outcome-based selection
+design.
+And that is what a case-control study is.
+To conduct a case-control study, first, we
+select all women in Boston who have had lung cancer in the last 20 years.
+Those are the cases--
+Y equals 1.
+Or maybe we select just a random sample of 1,000 cases
+rather than all the cases.
+Then we select a random sample of 1,000 women in Boston
+without lung cancer at different times during the period.
+These are the, quote, controls--
+the non-cases-- with Y equals 0.
+And that is a case-control study.
+Why do people conduct case-control studies?
+Because they allow us to estimate the facts in a very efficient way.
+It turns out that if the relative effect of A equals 1 versus A equals 0--
+hormone therapy versus no hormone therapy--
+can be estimated without bias, using the data
+from the entire population of women in Boston,
+then it can be mathematically shown that the relative effect can also
+be estimated using only the case-control data.
+The precision of the estimate would be a little bit smaller.
+But bear in mind that we can always add more controls if necessary.
+That is why we say that a case-control design is an efficient sampling
+from the underlying study population.
+The case-control study includes only a couple of thousand women,
+rather than all women in Boston.
+Here, I described a very simple case-control design.
+There are many variations of case-control designs,
+which we cannot cover here.
+But all of them have something in common.
+As you may have already noticed, the case-control design
+selects individuals based on their outcome.
+Women who did develop cancer are much more likely to be included in the study
+than women who did not develop cancer.
+Therefore, our causal graph will include a note for selection--
+C-- an arrow from the outcome Y to C, and a box around C
+to indicate that the analysis is conditional on having been selected
+into the study, which means that we are only one arrow away from selection
+bias.
+In case-control studies, we have to be especially careful,
+because bias will occur any time that a selection also depends on the treatment
+A. For example, suppose that convincing a random sample of women
+without cancer to become our controls is too hard.
+Rather, we decide that we're going to select most of our controls
+among post-menopausal women who had a hip fracture
+and are spending some time in the hospital.
+This is definitely easier to do, because women with hip fracture are
+in their beds and cannot run away from us when we ask them questions about
+their use of hormone therapy A. So now, our tag includes the note,
+hip fracture F, and an arrow from F to C.
+And this is a serious problem.
+Because hormone therapy A is known to have a causal effect on hip fracture.
+It lowers the risk of hip fracture-- which
+means that there is an arrow from A to F, and, therefore, selection bias.
+A woman who used hormone therapy is less likely to have had a hip fracture,
+and, therefore, less likely to have been selected as a control
+than a woman who did not use hormone therapy.
+Therefore, even if hormone therapy truly has a null effect on lung cancer,
+in our case-control study, we will find an association between hormone therapy
+and lung cancer.
+Hormone therapy users have a greater probability
+of being cases than controls.
+So in case control studies, like in all designs with outcome-based selection,
+an inappropriate selection of controls will introduce bias,
+even when the true effect is null.
+And this bias has different names in different settings.
+For example, the bias is sometimes referred to
+as "Berkson's bias" or "Berkson's fallacy,"
+when the two diseases, Y and F, lead to hospitalization--
+C-- and hospitalization is a selection criterion.
+In summary, in studies with outcome-based selection,
+beware of a strategy to select controls that may depend on
+whether the controls were exposed to the treatment of interest.
+OK, in the next segment, we will discuss follow-up studies.
+Here, the sampling is not meant to be outcome-dependent,
+because the outcome is not yet known at the time
+of the selection of the individuals.
+However, as we will see, funny things can happen.

@@ -1,0 +1,136 @@
+MIGUEL HERNAN: We have discussed several forms of selection bias.
+When we make casual inferences, we will need
+to control for those selection biases.
+Otherwise, we could incorrectly interpret an association
+between treatment and outcome as an indication
+of a causal effect of treatment, even if treatment had no effect on the outcome.
+In this segment, we will talk about some approaches
+to control for or adjust for selection bias.
+But as we have said before, this is not a course about the study design or data
+analysis.
+So we will only outline those approaches.
+OK.
+First of all, an obvious way to eliminate selection bias
+is to eliminate selection.
+But that is not possible, because selection is necessary in all studies.
+We need to select the individuals or the study
+units that will be part of our study.
+For example, case control designs require
+selection of cases and controls.
+We can use our subject matter knowledge, though,
+to reduce the possibility that the selection induces bias.
+For example, by selecting controls independently of treatment.
+More generally, we want to avoid selecting
+on colliders or their descendants, because that
+is the sort of selection that may create bias even under the null.
+But deciding who is selected into the study is not always possible.
+For example, individuals in a follow-up study may decide to drop out
+of a study, and we cannot force them to stay.
+In these cases, we will need to adjust for the selection bias,
+and same as in the previous lesson, when we discussed the need
+to adjust for confounding.
+However, there is a fundamental difference
+between adjustment for confounding and adjustment for selection bias.
+To adjust for confounding or better, to eliminate confounding,
+we can often randomize treatment assignment.
+That is, if we flip a coin to assign treatment, we expect no confounding.
+That is why we said that randomization, when feasible,
+is our best weapon against confounding.
+But randomization of treatment assignment
+does not help eliminate selection bias.
+For example, we have seen in this lesson that the randomized trials
+can be affected by selection bias due to defense and loss of follow-up.
+For randomization to be upheld again selection bias,
+we will need to randomize selection itself.
+Unfortunately, this is often impossible.
+We cannot randomly assign who is going to be lost to follow up.
+In fact, if we could assign the variable "lost to follow up: yes or no,"
+we would assign "no," lost to follow up, to everybody.
+Therefore in most cases, we will need to explicitly adjust for selection bias.
+Remember when we discussed confounding adjustment,
+we used the backdoor criterion to learn whether we could eliminate
+all bias based on the variables that we have measured,
+and to learn what the measured variables are needed for bias adjustment.
+Well we can also use the backdoor criterion for selection bias.
+The difference is that now, we will consider
+the backdoor paths between selection C and the outcome Y
+rather than the backdoor paths between treatment A
+the outcome Y. For example, consider the casual graph
+that we discussed for selection bias due to defense and lost to follow up.
+In this causal DAG, A is the treatment, Y is the outcome,
+C is selection by lost to follow up or censoring,
+U is the unmeasured health status that affects both censoring and outcome,
+and also unmeasured health status U affects
+censoring through symptoms of the disease
+L, which is a measured variable.
+As we discussed, there is selection bias,
+because conditioning on the collider C opens a path between A and Y.
+Note that the selection bias will disappear if we could block the path
+from collider C to the outcome Y. That is the path C-L-U-Y.
+One simple way of blocking the path is conditioning or stratifying
+on the measure of variable L. Graphically,
+we would put a box around L, which blocks the path C-L-U-Y and therefore
+eliminates the selection bias.
+This is the adjustment method that we refer to as stratification
+in the previous lesson.
+And there are different ways in which we can implement stratification.
+For example, we can restrict the analysis
+to a subset of a static population with a particular value of L. A stratum
+of L, say, people without symptoms.
+Or we could do the analysis separately in each stratum of L
+and then pool the effect estimates.
+A more sophisticated way of doing this that many of you may be familiar with
+is regression analysis.
+In order to use stratification to adjust for selection bias,
+we need data on all the variables that are
+required to block all the backdoor paths between the collider and the outcome.
+In our causal graph, we need data on either L or U.
+We cannot stratify on U because that variable is unmeasured,
+but fortunately we can stratify on L because that variable is measured.
+However, stratification doesn't always work.
+Suppose that the effect of A on C is mediated by L.
+There is an arrow from A to L in addition to an arrow from L to C
+and therefore L is a collider on the path A-L-U-Y.
+Now conditioning or stratifying on L will open the path A-L-U-Y and will
+induce selection bias even under the null.
+That is, stratification cannot solve our problem.
+An association between A and Y will be found whether we condition on L
+or we don't condition on L, even if A had no effect on Y.
+Fortunately, we have another adjustment method that doesn't have this problem.
+Inverse probability weighting.
+IP weighting.
+To use this method we first estimate for each individual
+the probability of remaining under follow up, the probability of remaining
+uncensored.
+This probability will be conditional on treatment A and the measure
+of covariate L, and therefore will be different for individuals
+with different values of A and L. Then we compute the inverse
+of that probability for each person.
+That is, 1 divided by the probability.
+And this is the IP weight for each person.
+Finally, we compute the association between treatment A and outcome Y.
+But we make sure that in the analysis, each person is counted as many times
+as her IP weight indicates.
+As an example, if a person with symptoms L equals 0 who receives therapy
+A equals 1 had a 10% chance of not being lost to follow up,
+then her probability of treatment is 0.1.
+And her IP weight is 1/0.1 which is 10.
+This person will have a weight of 10 in the analysis.
+It turns out that IP weighting mathematically
+eliminates the back doors into C, and it can therefore
+be used to adjust for selection bias under all four
+structures we have discussed.
+For each of them, the arrows into C are cut by IP weighting,
+which eliminates the selection bias.
+Of course, a successful use of IP weighting to adjust for selection bias
+requires two things.
+First, knowledge about the true casual DAG.
+If we don't know the true casual DAG, then we
+don't know the paths that we need to block,
+and therefore we don't know which variables we need to adjust for.
+Second, data on the variables that need to be adjusted for.
+If those data are not available, then IP weighting will not eliminate all bias,
+and the magnitude of the bias will depend on how much of the backdoor
+paths remain open.
+OK.
+It is now time to return to the question with which we started this lesson.

@@ -1,0 +1,105 @@
+MIGUEL HERNAN: We have seen that selection bias under the null
+may arise in a follow-up study for two reasons.
+First, because of the criteria used to decide who is initially
+included in the study, second, because individuals
+who met those eligibility criteria at baseline then got lost to follow-up.
+In the previous segment we talked about the latter case.
+We talked about bias that arises even under the null when
+individuals get lost after having been selected in the first place.
+In this segment we'll talk about the other case.
+We are going to talk about selection bias at baseline.
+As an example of this bias, we will consider bias due to self-selection
+of individuals into our study.
+Suppose we want to estimate the causal effect of cigarette smoking,
+A, on the risk of coronary heart disease,
+Y. We announce our study in social media.
+Everybody knows that the study is going to be conducted,
+and we wait to hear for volunteers who wish to participate.
+Here the variable, C, represents self-selection into the study.
+Our analysis will be restricted to those who volunteer to participate.
+Those with C equals 0.
+Now who are those who are going to participate?
+Well, it is well-known that cigarette smokers
+are less interested in health studies than non-smokers.
+So our study will have fewer cigarette smokers than the general population.
+And we represent this causal effect of smoking on self-selection
+by adding an arrow from A to C. Also, people
+who are personally interested in heart disease are more likely to participate.
+We represent the variable, heart disease awareness, by L,
+and we add an arrow from L to C. In addition,
+we also include a variable U that represents family history of heart
+disease, or, if you will, all the genetic and environmental factors that
+affect both an individual's family history of heart disease
+and the individual's own risk of heart disease.
+So the graph now includes an arrow from U to L, and also an arrow from U
+to Y. And in this causal graph, we can see
+that restricting the study to volunteers is the same as conditioning
+on the collider C. And this conditioning opens the path, A, C, L, U, Y,
+and therefore creates selection bias even under the null.
+The structure of this selection bias is exactly the same
+that we discussed in the previous segment
+for differential lost to follow-up and missing data.
+And also, like for missing data, many different structures
+can result in self-selection bias.
+For example, consider a situation in which
+heart disease awareness, L, is a consequence
+of being a cigarette smoker.
+Then we would add an arrow from A to L, and conditioning on C
+would open the path A, L, U, Y. Or situations
+in which we include the variable, healthy lifestyle, W,
+which affects the probability of being a cigarette smoker as shown
+in these causal graphs.
+So, like for missing data and lost follow-up,
+multiple causal graphs can be used to represent bias due to self-selection.
+In all cases, selection bias under the null
+is caused by conditioning on a variable that is a common effect of a treatment
+or a cause of the treatment and of the outcome or a cause of the outcome.
+OK.
+One last thing.
+Can we have bias due to self-selection in randomized experiments?
+For example, consider a randomized trial of Aspirin and stroke.
+Eligible individuals are assigned to either Aspirin, A equals 1,
+or to no Aspirin, A equals 0, and then followed for five years.
+However, only individuals who consent to participate in the trial
+would be included in it.
+The study's conditional on consent at baseline.
+By definition, self-selection is present in any human experiment, at least
+if we conduct it under reasonable ethical standards.
+If we represent consent by C on the causal graph,
+do we expect bias due to conditioning on this form of self-selection?
+The answer is no.
+In a randomized trial, the decision to consent
+is made before the treatment is assigned.
+That is, the assignment to treatment A cannot influence self-selection C,
+and therefore bias under the null due to self-selection at baseline cannot
+happen in a randomized trial.
+On the other hand, it is possible that eligible individuals
+who consent to participate in the trial are
+different from eligible individuals who do not consent.
+For example, eligible individuals who consent
+may be less sick than the others.
+And it is also possible that the effect of Aspirin, A,
+on a stroke, Y, in self-selected individuals
+defers from the effect in the entire population of eligible individuals.
+If that is the case, then the association between A and Y
+in those who consent will not be an unbiased estimate of the effect of A
+and Y in the entire population of eligible individuals.
+We say that the effect estimate from the randomized trial
+is not transportable to populations of individuals with other characteristics.
+But this situation does not create selection bias if the effect of A and Y
+is null in all eligible individuals.
+This is a different problem, and this is a situation
+that is sometimes discussed in terms of the concepts of internal validity
+and external validity.
+We say that a study has internal validity when
+the estimated association has a causal interpretation in the study population.
+That is, there is no selection bias, there is no confounding, et cetera.
+We say that a study has external validity when
+the estimated association has a causal interpretation in another population.
+That is, we can transport or generalize the estimated effect
+to other populations.
+In randomized trials, self-selection bias does not affect internal validity,
+but may affect external validity.
+OK.
+In the next segment we'll talk more about selection bias
+and how to adjust for it.

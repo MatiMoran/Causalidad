@@ -1,0 +1,121 @@
+MIGUEL HERNAN: OK, we now turn our attention to follow-up studies.
+These are studies in which the individuals or the study units
+receive different treatment values and then
+are followed over time until their outcomes are measured.
+For example, consider a follow-up study of HIV positive individuals.
+Each individual is treated with either a new treatment, A equals 1,
+or with a standard treatment, A equals 0, at baseline.
+And then after one year of follow-up, the investigators
+determine whether the participants have developed AIDS, which is our outcome Y.
+In this follow-up study, we may want to estimate the causal effect of treatment
+A on the outcome Y after one year.
+In every follow-up study, we can have selection bias
+even under the null for two reasons.
+First, selection bias may arise because of the criteria used
+to decide who is initially included in the study, who
+is selected into the study.
+And second, selection bias may arise because individuals
+who met those eligibility criteria at baseline, then
+got lost during the study.
+In these two DAGs that you are seeing now, C represents selection.
+In this segment, we are going to explore the selection bias that happens even
+under the null when the individuals get lost after having
+been selected in the first place.
+In the next segment, we will talk about selection bias at baseline.
+So in many follow-up studies, some individuals are lost to follow-up.
+For example, in our study to estimate the causal effect
+of antiretroviral therapy A on the risk of AIDS Y,
+some individuals missed the follow-up visit at one year.
+And that is a problem, because the outcome was supposed
+to be measured at that time, and the value
+of the outcome for individuals who missed the follow-up visit is unknown.
+Technically, we say that the outcome Y is censored --
+the censoring by lost follow-up, which we represent by the variable C.
+Individuals with a censored outcome need to be excluded from the analysis,
+because we cannot estimate the association between A and Y unless we
+know the values of both A and Y. Therefore,
+missing the follow-up visit results in selection.
+The analysis needs to be necessarily restricted to individuals
+who didn't miss the follow-up visit.
+The question is, does this selection induce bias under the null?
+Well, if the loss to follow-up happened at random, then
+it wouldn't result in any selection bias.
+But what if the loss to follow-up depends
+on predictors of treatment and outcome?
+For example, suppose individuals tend to miss the follow-up visit
+when they are sick.
+And we use the variable U to represent health status, how sick people are.
+Then we would add an arrow from U to C. Now, because health status can also
+affect the risk of AIDS, of the outcome, we also add an arrow from U to Y.
+And by the way, here, and in the remainder of this discussion,
+we have omitted the possible arrow from A
+to Y, because we are focusing on bias under the null.
+OK, let's keep building our causal graph.
+The reason why sick patients missed their visit
+is that they develop symptoms of the disease.
+Therefore, we add the variable L, symptoms, to the causal graph.
+And L is a mediator between U and C.
+Now, suppose that individuals are also more likely to miss a follow-up visit
+if they receive the new treatment --
+say, because the treatment has side effects that make
+individuals unhappy with the study.
+We therefore add an arrow from A to C.
+And now we say there is a differential loss to follow-up between those
+with A equals 1 and A equals 0.
+Look at the causal graph.
+Selecting those who are not lost to follow-up, C equals 0,
+is the same as conditioning on the collider
+C. And conditioning on the collider C opens the path, ACLUY.
+So the association flows between A and Y, now.
+We will have an association between the causes of C, A, and U,
+because we are conditioning on C. In other words,
+differential loss to follow-up can create the selection bias.
+And this bias can have several structures.
+For example, suppose that both treatment A and health status
+U have a causal effect on disease symptoms L,
+which we represent by adding arrows from A to L and from U to L. Suppose
+also that patients with symptoms are more
+likely to drop out of the study, which we represent
+by adding an arrow from L to C.
+Now, C is not a collider.
+It is the effect of the collider L, which
+means that C is a common effect of A and U.
+And as we discussed in lesson 1, conditioning
+on a common effect C opens the path A, L, U through the collider L. Therefore,
+we have selection bias, because A and Y are associated even under the null.
+Something to note in these two examples is
+that the differential loss to follow-up would
+create selection bias even if the treatment A had been randomly assigned.
+Randomization may be our best weapon against confounding at baseline,
+but it is powerless against biases like these selection
+bias that happen after baseline.
+So we will have to worry about selection bias in randomized experiments.
+These two causal graphs represent causal structures, in which the selection
+bias is caused by conditioning on a common effect C of treatment A,
+and a cause U of the outcome Y.
+Differential loss to follow-up may induce selection bias in other ways,
+too.
+For example, suppose individuals with a certain personality
+are more likely to seek new treatments and also less likely
+to drop out of study.
+We represent this personality variable by W,
+and we add arrows from W to A and from W to C.
+And then this structure, conditioning on C
+opens the path that goes from A to Y. The path is AWCLUY.
+Similarly, if the effects of health status U and personality W
+were fully mediated by symptoms L, then conditioning on C,
+and effect of the collider L, would open the path AWLUY, which
+would create selection bias, again.
+OK, so now, we have discussed four representative examples
+of selection bias due to differential loss to follow-up.
+We can use these four graphs to represent selection bias
+due to other forms of missing data, too.
+We just need to redefine censoring C as a different type of missing data.
+And of course, we can propose many variations of these four graphs
+to capture other causal stories.
+All these examples illustrate the fact that selection bias under the null
+is caused by conditioning on a variable that
+is a common effect of the treatment, or a cause
+of the treatment, and of the outcome, or a cause of the outcome.
+In the next segment, we are going to apply these ideas to other types
+of selection bias in follow-up studies.

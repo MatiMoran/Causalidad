@@ -1,0 +1,1785 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inferencia bayesiana — Matias Moran</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #fdfae7;
+      --primary: #1e2bfa;
+      --text: #111111;
+      --text-muted: #6b6b6b;
+      --text-light: #9a9a9a;
+      --accent-light: rgba(30, 43, 250, 0.08);
+      --accent-medium: rgba(30, 43, 250, 0.15);
+      --border: rgba(30, 43, 250, 0.2);
+      --card-bg: rgba(30, 43, 250, 0.04);
+      --positive: #059669;
+      --negative: #dc2626;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    ::selection { background: var(--accent-medium); color: var(--text); }
+
+    .deck {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 3vw 3.5vw 7.5vh 3.5vw;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(40px);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+      overflow: hidden;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateX(0);
+      z-index: 10;
+    }
+
+    .slide.prev { transform: translateX(-40px); }
+
+    h1, h2, h3, h4 {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    h1 { font-size: clamp(2.6rem, 4.8vw, 4.2rem); font-weight: 700; }
+    h2 { font-size: clamp(1.7rem, 2.7vw, 2.5rem); margin-bottom: 1rem; }
+    h3 { font-size: clamp(1.05rem, 1.6vw, 1.35rem); font-weight: 500; line-height: 1.3; }
+    h4 {
+      font-size: clamp(0.72rem, 1vw, 0.9rem);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+    }
+
+    p, li {
+      font-size: clamp(0.85rem, 1.02vw, 1rem);
+      line-height: 1.55;
+      color: var(--text-muted);
+    }
+
+    strong { color: var(--text); font-weight: 600; }
+    em { font-style: italic; }
+
+    .slide-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2vh;
+      flex-shrink: 0;
+    }
+
+    .slide-header h4 { margin: 0; }
+
+    .slide-header .tag {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--primary);
+      background: var(--accent-light);
+      padding: 0.35rem 0.9rem;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+
+    .slide-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .accent-line {
+      width: 60px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+    }
+
+    .accent-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    /* Navigation */
+    .nav-controls {
+      position: fixed;
+      bottom: 2.2vh;
+      right: 3vw;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      z-index: 100;
+    }
+
+    .nav-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      color: var(--primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .nav-btn:hover {
+      background: var(--primary);
+      color: var(--bg);
+      border-color: var(--primary);
+    }
+
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .nav-btn:disabled:hover { background: var(--bg); color: var(--primary); border-color: var(--border); }
+
+    .slide-counter {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      position: fixed;
+      bottom: 2.2vh;
+      left: 3vw;
+      z-index: 100;
+    }
+
+    .progress-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: var(--primary);
+      transition: width 0.4s ease;
+      z-index: 100;
+      width: 0;
+    }
+
+    .keyboard-hint {
+      position: fixed;
+      bottom: 2.2vh;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.66rem;
+      color: var(--text-light);
+      z-index: 100;
+      opacity: 0.7;
+      white-space: nowrap;
+    }
+
+    @media (max-height: 720px) {
+      .slide { padding: 2.2vh 3vw 6.5vh; }
+      .slide-header { margin-bottom: 1.2vh; }
+      h2 { margin-bottom: 0.7rem; }
+      .nav-btn { width: 36px; height: 36px; }
+      .dag { width: min(100%, 58vh); }
+      .split-right { gap: 0.8rem; }
+    }
+    /* Cover */
+    .layout-cover {
+      justify-content: center;
+      align-items: flex-start;
+      padding-left: 8vw;
+    }
+
+    .layout-cover h1 { max-width: 56vw; margin-bottom: 1.2rem; line-height: 1.05; }
+
+    .layout-cover .subtitle {
+      font-size: clamp(1rem, 1.35vw, 1.2rem);
+      color: var(--text-muted);
+      max-width: 42vw;
+      margin-bottom: 2.6rem;
+      font-weight: 400;
+    }
+
+    .layout-cover .meta {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.78rem;
+      color: var(--text-light);
+      letter-spacing: 0.05em;
+    }
+
+    .layout-cover .cover-decoration {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 35vw;
+      height: 100vh;
+      background: var(--accent-light);
+      clip-path: polygon(30% 0, 100% 0, 100% 100%, 0% 100%);
+    }
+
+    .layout-cover .cover-dots {
+      position: absolute;
+      bottom: 12vh;
+      right: 8vw;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      opacity: 0.25;
+    }
+
+    .layout-cover .cover-dots .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--primary);
+      border-radius: 50%;
+    }
+
+    .cover-formula {
+      position: absolute;
+      right: 4.5vw;
+      top: 50%;
+      transform: translateY(-50%);
+      max-width: 27vw;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: clamp(1.2rem, 2vw, 1.9rem);
+      font-weight: 500;
+      line-height: 1.35;
+      color: var(--primary);
+      opacity: 0.55;
+      text-align: right;
+    }
+
+    .cover-formula small {
+      display: block;
+      margin-top: 0.8rem;
+      font-size: 0.7rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-light);
+      opacity: 1;
+    }
+
+    /* Metrics */
+    .layout-metrics .slide-content { justify-content: flex-start; }
+
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.4rem;
+      margin-top: 0.5rem;
+      align-items: stretch;
+    }
+
+    .metric-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      padding: 1.4rem 1.5rem;
+      border-radius: 14px;
+      border: 1.5px solid var(--border);
+      background: var(--card-bg);
+    }
+
+    .metric-card .metric-value {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: clamp(2rem, 3.2vw, 2.9rem);
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .metric-card .metric-label {
+      font-size: clamp(0.9rem, 1.15vw, 1rem);
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .metric-card .metric-desc {
+      font-size: clamp(0.76rem, 0.92vw, 0.88rem);
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .metric-card .metric-supports {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin: 0.1rem 0 0;
+      padding: 0.65rem 0 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .metric-card .metric-supports li {
+      font-size: clamp(0.72rem, 0.85vw, 0.82rem);
+      color: var(--text-muted);
+      padding-left: 0.9rem;
+      position: relative;
+      line-height: 1.45;
+    }
+
+    .metric-card .metric-supports li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--text-light);
+    }
+
+    .metrics-caption {
+      margin-top: 1rem;
+      font-size: clamp(0.8rem, 0.95vw, 0.9rem);
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Split */
+    .layout-split .slide-content { justify-content: flex-start; }
+
+    .split-body {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 3rem;
+      margin-top: 0.4rem;
+    }
+
+    .split-left, .split-right {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .split-right {
+      padding-left: 2.2rem;
+      border-left: 2px solid var(--border);
+      justify-content: center;
+    }
+
+    .insight-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.95rem;
+      margin: 0;
+      counter-reset: insight;
+    }
+
+    .insight-list li {
+      position: relative;
+      padding-left: 2.5rem;
+      font-size: clamp(0.86rem, 1vw, 0.98rem);
+      color: var(--text);
+      line-height: 1.5;
+      counter-increment: insight;
+    }
+
+    .insight-list li::before {
+      content: counter(insight, decimal-leading-zero);
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--primary);
+      letter-spacing: 0.05em;
+      line-height: 1.7;
+    }
+
+    .question-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      margin: 0;
+    }
+
+    .question-list li {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: clamp(0.84rem, 1.02vw, 0.98rem);
+      color: var(--text);
+      line-height: 1.35;
+      padding: 0.55rem 0.8rem;
+      border-left: 3px solid var(--primary);
+      background: var(--accent-light);
+      border-radius: 0 8px 8px 0;
+    }
+
+    .question-list .code { white-space: normal; }
+
+    .split-highlight {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: clamp(1.05rem, 1.4vw, 1.35rem);
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.4;
+      padding: 1.2rem 1.4rem;
+      background: var(--accent-light);
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+    }
+
+    .split-highlight cite {
+      display: block;
+      margin-top: 0.6rem;
+      font-style: normal;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .mini-stat-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.9rem;
+      padding-top: 0.2rem;
+    }
+
+    .mini-stat {
+      padding: 0.8rem 0.9rem;
+      border-radius: 10px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+    }
+
+    .mini-stat .mini-val {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .mini-stat .mini-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+      line-height: 1.35;
+    }
+
+    /* Quote */
+    .layout-quote {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .layout-quote .quote-mark {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 8rem;
+      font-weight: 700;
+      color: var(--primary);
+      opacity: 0.15;
+      line-height: 0.5;
+      margin-bottom: 1rem;
+    }
+
+    .layout-quote blockquote {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+      font-weight: 500;
+      line-height: 1.3;
+      color: var(--text);
+      max-width: 70vw;
+      margin-bottom: 1.6rem;
+    }
+
+    .layout-quote .quote-source {
+      font-size: clamp(0.85rem, 1.05vw, 0.98rem);
+      color: var(--text-muted);
+      max-width: 65vw;
+      line-height: 1.5;
+    }
+
+    .layout-quote .quote-source strong { color: var(--text); font-weight: 600; }
+
+    .layout-quote .quote-decoration {
+      position: absolute;
+      top: 10vh;
+      left: 5vw;
+      width: 80px;
+      height: 80px;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+    }
+
+    .layout-quote .quote-decoration-2 {
+      position: absolute;
+      bottom: 12vh;
+      right: 6vw;
+      width: 60px;
+      height: 60px;
+      background: var(--accent-light);
+      border-radius: 50%;
+    }
+
+    /* Closing */
+    .layout-closing {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .layout-closing h1 { margin-bottom: 1rem; }
+
+    .layout-closing .closing-sub {
+      font-size: clamp(1rem, 1.4vw, 1.2rem);
+      color: var(--text-muted);
+      max-width: 50vw;
+      margin-bottom: 1.8rem;
+    }
+
+    .layout-closing .closing-contact {
+      margin-top: 2rem;
+      font-size: 0.8rem;
+      color: var(--text-light);
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      letter-spacing: 0.04em;
+    }
+
+    .layout-closing .closing-decoration {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 500px;
+      height: 500px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .layout-closing .closing-decoration-2 {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 360px;
+      height: 360px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+    /* Inline code / formulas */
+    .code {
+      font-family: 'Space Grotesk', ui-monospace, monospace;
+      font-size: 0.9em;
+      font-weight: 500;
+      color: var(--primary);
+      background: var(--accent-light);
+      padding: 0.1em 0.38em;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    .punchline {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: clamp(0.95rem, 1.2vw, 1.08rem);
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.4;
+      margin-top: 0.7rem;
+    }
+
+    .note-strip {
+      margin-top: 0.8rem;
+      padding: 0.65rem 0.9rem;
+      border-radius: 10px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      font-size: clamp(0.74rem, 0.88vw, 0.84rem);
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .big-stat {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: clamp(5rem, 10vw, 9rem);
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+    }
+
+    /* Hook */
+    .hook-lead {
+      font-size: clamp(0.95rem, 1.15vw, 1.08rem);
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .toss-row {
+      display: flex;
+      gap: 0.7rem;
+      margin: 1.2rem 0 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .toss {
+      width: clamp(52px, 5vw, 72px);
+      height: clamp(52px, 5vw, 72px);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: clamp(1.35rem, 2vw, 1.9rem);
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .toss-a { background: var(--primary); color: var(--bg); }
+    .toss-t {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      color: var(--primary);
+    }
+
+    .toss-e { background: var(--primary); color: var(--bg); }
+    .toss-f {
+      background: rgba(220, 38, 38, 0.08);
+      border: 1.5px solid rgba(220, 38, 38, 0.35);
+      color: var(--negative);
+    }
+
+    .toss-legend {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.72rem;
+      color: var(--text-light);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 1.1rem;
+    }
+
+    .hook-question {
+      display: flex;
+      align-items: center;
+      gap: 1.4rem;
+      padding: 1rem 1.4rem;
+      border-radius: 14px;
+      background: var(--accent-light);
+      border-left: 4px solid var(--primary);
+      max-width: 72vw;
+    }
+
+    .hook-big {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: clamp(3rem, 5.5vw, 5rem);
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+      opacity: 0.35;
+    }
+
+    .hook-question p {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: clamp(1rem, 1.35vw, 1.25rem);
+      color: var(--text);
+      font-weight: 500;
+      line-height: 1.35;
+    }
+
+    /* Comparison table */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.3rem;
+    }
+
+    .compare-table th {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+      text-align: left;
+      padding: 0.65rem 0.85rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .compare-table td {
+      padding: 0.7rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      font-size: clamp(0.8rem, 0.95vw, 0.92rem);
+      color: var(--text-muted);
+      vertical-align: middle;
+    }
+
+    .compare-table td:first-child { color: var(--text); }
+    .compare-table td:nth-child(3) { color: var(--primary); font-weight: 600; }
+    .compare-table tr:last-child td { border-bottom: none; }
+
+    /* Two model cards */
+    .model-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.4rem;
+      margin-top: 0.4rem;
+    }
+
+    .model-card {
+      padding: 1.4rem 1.6rem;
+      border-radius: 14px;
+      border: 1.5px solid var(--border);
+      background: var(--card-bg);
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .model-label {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+    }
+
+    .model-value {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: clamp(2.6rem, 4.2vw, 3.8rem);
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .model-interval {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: clamp(0.95rem, 1.15vw, 1.08rem);
+      color: var(--text-muted);
+    }
+
+    .model-verdict {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: clamp(0.9rem, 1.05vw, 1rem);
+      font-weight: 600;
+      margin-top: 0.3rem;
+    }
+
+    .model-verdict.good { color: var(--positive); }
+    .model-verdict.bad { color: var(--negative); }
+
+    /* DAG */
+    .dag {
+      position: relative;
+      width: min(100%, 64vh);
+      aspect-ratio: 4 / 3;
+      margin: 0 auto;
+    }
+
+    .dag svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .dag-node {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: clamp(50px, 4.6vw, 64px);
+      height: clamp(42px, 3.9vw, 54px);
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: var(--card-bg);
+      color: var(--primary);
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-weight: 700;
+      font-size: clamp(0.95rem, 1.4vw, 1.2rem);
+    }
+
+    .dag-node.solid {
+      background: var(--primary);
+      color: var(--bg);
+      border-color: var(--primary);
+    }
+
+    .dag-label {
+      position: absolute;
+      transform: translate(-50%, 0);
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.64rem;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+
+    /* Small / large world visual */
+    .world-visual {
+      position: relative;
+      width: min(100%, 46vh);
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    .world-large {
+      width: 76%;
+      height: 76%;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .world-small {
+      width: 52%;
+      height: 52%;
+      background: var(--accent-light);
+      border: 1.5px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: clamp(0.85rem, 1.1vw, 1rem);
+      font-weight: 600;
+      color: var(--primary);
+      text-align: center;
+      line-height: 1.25;
+    }
+
+    .world-label {
+      position: absolute;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.64rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-light);
+    }
+
+    .world-label-large { top: 2%; left: 50%; transform: translateX(-50%); }
+    .world-label-small { bottom: 4%; left: 50%; transform: translateX(-50%); }
+
+    /* Books */
+    .book-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.4rem;
+      margin-top: 0.4rem;
+    }
+
+    .book-card {
+      padding: 1.5rem 1.7rem;
+      border-radius: 14px;
+      border: 1.5px solid var(--border);
+      background: var(--card-bg);
+    }
+
+    .book-card h3 { margin-bottom: 0.45rem; }
+
+    .book-authors {
+      font-size: clamp(0.82rem, 0.98vw, 0.92rem);
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .book-chapters {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.78rem;
+      color: var(--primary);
+      margin-top: 0.7rem;
+      letter-spacing: 0.02em;
+    }
+
+    .book-tag {
+      display: inline-block;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.64rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+      background: var(--accent-light);
+      padding: 0.28rem 0.7rem;
+      border-radius: 100px;
+      margin-bottom: 0.7rem;
+    }
+    .quote-cite {
+      margin-top: 0.7rem;
+      font-size: clamp(0.74rem, 0.88vw, 0.84rem);
+      color: var(--text-light);
+      line-height: 1.45;
+      font-style: italic;
+    }
+
+    .quote-cite strong {
+      color: var(--text-muted);
+      font-weight: 600;
+      font-style: normal;
+    }
+
+    /* Takeaways */
+    .takeaway-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.2rem;
+      margin-top: 0.5rem;
+    }
+
+    .takeaway-card {
+      display: flex;
+      gap: 1.2rem;
+      align-items: flex-start;
+      padding: 1.5rem 1.6rem;
+      border-radius: 14px;
+      border: 1.5px solid var(--border);
+      background: var(--card-bg);
+    }
+
+    .takeaway-num {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+      opacity: 0.45;
+      flex-shrink: 0;
+    }
+
+    .takeaway-text {
+      font-size: clamp(0.9rem, 1.05vw, 1rem);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .takeaway-text strong { color: var(--text); }
+
+    .book-points {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 0.9rem;
+      padding-top: 0.8rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .book-points li {
+      position: relative;
+      padding-left: 1rem;
+      font-size: clamp(0.82rem, 0.96vw, 0.9rem);
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .book-points li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--text-light);
+    }
+
+    .layout-hook .slide-content { justify-content: center; }
+
+    /* Help overlay */
+    .help-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(17, 17, 17, 0.42);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+    }
+
+    .help-overlay.open { display: flex; }
+
+    .help-panel {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      padding: 1.8rem 2.2rem;
+      width: min(520px, 86vw);
+      box-shadow: 0 20px 60px rgba(17, 17, 17, 0.18);
+      position: relative;
+    }
+
+    .help-panel h2 { font-size: 1.55rem; margin-bottom: 1rem; }
+
+    .help-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .help-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .help-key {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--primary);
+      background: var(--accent-light);
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    .help-close {
+      position: absolute;
+      top: 0.9rem;
+      right: 1rem;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--primary);
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .help-close:hover { background: var(--primary); color: var(--bg); }
+
+    @media (max-height: 700px) {
+      .slide { padding: 2vh 2.8vw 6vh; }
+      .slide-header { margin-bottom: 1vh; }
+      .layout-cover h1 { font-size: clamp(2.2rem, 4vw, 3.4rem); }
+      .toss { width: 48px; height: 48px; }
+      .metric-card { padding: 1rem 1.1rem; }
+      .split-body { gap: 2rem; }
+      .insight-list { gap: 0.65rem; }
+    }
+
+    @media (max-height: 720px) {
+      .dag { width: min(100%, 58vh); }
+      .split-right { gap: 0.8rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .slide, .progress-bar, .nav-btn { transition: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <!-- 1 · Título -->
+  <section class="slide layout-cover active" aria-label="Título">
+      <div class="cover-decoration"></div>
+      <div class="cover-dots">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      </div>
+      <div class="accent-line"></div>
+      <h1>Inferencia bayesiana:<br>pensar con incertidumbre</h1>
+      <p class="subtitle">De la fábrica al invernadero: qué da Bayes y qué le sigue pidiendo al modelo.</p>
+      <p class="meta">Matias Moran &nbsp;&middot;&nbsp; Fundamentos matemáticos de la causalidad &nbsp;&middot;&nbsp; 2° cuatrimestre 2026</p>
+      <div class="cover-formula">
+        P(H | D) &prop; P(D | H) P(H)
+        <small>La regla de Bayes</small>
+      </div>
+    </section>
+
+  <!-- 2 · El problema causal -->
+  <section class="slide layout-split" aria-label="El problema causal: el invernadero">
+      <div class="slide-header">
+        <h4>El problema causal</h4>
+        <span class="tag">El invernadero</span>
+      </div>
+      <div class="slide-content">
+        <h2>Empecemos por el problema: ¿el tratamiento hace crecer?</h2>
+        <div class="split-body">
+          <div class="split-left">
+            <div class="dag">
+              <svg viewBox="0 0 400 300" aria-hidden="true">
+                <defs>
+                  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(30,43,250,0.55)"></path>
+                  </marker>
+                </defs>
+                <line x1="90" y1="89" x2="180" y2="221" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow)"></line>
+                <line x1="310" y1="89" x2="220" y2="221" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow)"></line>
+                <line x1="330" y1="90" x2="330" y2="140" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow)"></line>
+                <line x1="304" y1="186" x2="226" y2="234" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow)"></line>
+              </svg>
+              <div class="dag-node" style="left:17.5%; top:20%;">H0</div>
+              <div class="dag-label" style="left:17.5%; top:31%;">altura inicial</div>
+              <div class="dag-node solid" style="left:82.5%; top:20%;">T</div>
+              <div class="dag-label" style="left:82.5%; top:31%;">tratamiento</div>
+              <div class="dag-node" style="left:82.5%; top:56.7%;">F</div>
+              <div class="dag-label" style="left:82.5%; top:67.7%;">hongo</div>
+              <div class="dag-node" style="left:50%; top:83.3%;">H1</div>
+              <div class="dag-label" style="left:50%; top:94.3%;">altura final</div>
+            </div>
+            <p class="punchline" style="text-align:center; margin-top:0;">100 plantas &middot; T aleatorizado &middot; F post-tratamiento</p>
+          </div>
+          <div class="split-right">
+            <h3>El ATE de la materia</h3>
+            <div class="big-stat" style="font-size:clamp(2.4rem,4.2vw,3.6rem); white-space:nowrap;">1.05 cm</div>
+            <p><span class="code">ATE = E[h1(1) &minus; h1(0)]</span></p>
+            <p><span class="code">ATE_hat = media(h1 | T=1) &minus; media(h1 | T=0)</span></p>
+            <p>IC 95% bootstrap <strong>[0.13, 1.95]</strong></p>
+            <p class="punchline">Un número. Tres preguntas que no responde:</p>
+            <ul class="question-list">
+              <li><span class="code">P(ATE &gt; 0 | datos)</span></li>
+              <li><span class="code">P(0.5 &lt; ATE &lt; 1.5 cm | datos)</span></li>
+              <li><span class="code">P(&ge;5 de 10 plantas nuevas tratadas &gt; 14 cm | datos)</span></li>
+            </ul>
+            <div class="note-strip">Volvemos a estas preguntas después de los chips.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  <!-- 3 · Hook: microchips -->
+  <section class="slide layout-hook" aria-label="Hook: los microchips">
+      <div class="slide-header">
+        <h4>El hook</h4>
+        <span class="tag">9 chips</span>
+      </div>
+      <div class="slide-content">
+        <h2>¿Qué fracción de los chips sale bien?</h2>
+        <p class="hook-lead">Fabrico 9 microchips. Anoto si funciona (E) o falla (F):</p>
+        <div class="toss-row" aria-label="Secuencia de 9 chips: éxito, fallo, éxito, éxito, éxito, fallo, éxito, fallo, éxito">
+          <div class="toss toss-e">E</div>
+          <div class="toss toss-f">F</div>
+          <div class="toss toss-e">E</div>
+          <div class="toss toss-e">E</div>
+          <div class="toss toss-e">E</div>
+          <div class="toss toss-f">F</div>
+          <div class="toss toss-e">E</div>
+          <div class="toss toss-f">F</div>
+          <div class="toss toss-e">E</div>
+        </div>
+        <div class="toss-legend">E = éxito (funciona) &nbsp;&middot;&nbsp; F = fallo (defectuoso)</div>
+        <div class="hook-question">
+          <span class="hook-big">?</span>
+          <p>Antes de calcular: ¿más o menos de mitad funcionan? ¿Y más de 60%?</p>
+        </div>
+        <div class="note-strip">Apuestas primero. Fórmulas después. La intuición ya está haciendo Bayes.</div>
+      </div>
+    </section>
+
+  <!-- 4 · Frecuentista -->
+  <section class="slide layout-split" aria-label="El enfoque frecuentista y su techo">
+      <div class="slide-header">
+        <h4>El enfoque frecuentista</h4>
+        <span class="tag">Y su techo</span>
+      </div>
+      <div class="slide-content">
+        <h2>Con 9 chips, el enfoque frecuentista te deja a mitad de camino</h2>
+        <div class="split-body">
+          <div class="split-left">
+            <h3>Lo que te da</h3>
+            <ul class="insight-list">
+              <li><strong>MLE</strong> <span class="code">p̂ = 6/9 = 0.667</span></li>
+              <li><strong>IC 95% exacto</strong> <span class="code">[0.30, 0.93]</span></li>
+              <li><strong>Test <span class="code">H0: p = 0.5</span></strong> <span class="code">p ≈ 0.25</span> (una cola) / <span class="code">0.51</span> (dos colas)</li>
+              <li><strong>Conclusión</strong> "no rechazo que la mitad funcione"</li>
+            </ul>
+          </div>
+          <div class="split-right">
+            <div class="split-highlight">
+              <strong>Lo que no te da</strong>
+              <ul style="list-style:none; display:flex; flex-direction:column; gap:0.5rem; margin-top:0.65rem;">
+                <li><span class="code">P(p &gt; 0.5 | datos)</span></li>
+                <li><span class="code">P(p &gt; 0.6 | datos)</span></li>
+                <li><span class="code">P(≤4 éxitos en 20 | datos)</span></li>
+              </ul>
+            </div>
+            <p class="punchline">El test responde <span class="code">P(datos | H)</span>, no <span class="code">P(H | datos)</span>.</p>
+            <div class="note-strip"><strong>Misma idea, otra pregunta:</strong> test positivo en enfermedad rara → <span class="code">P(enfermo | +) = 25%</span> vs <span class="code">P(+ | sano) = 9.4%</span>. El test no está mal; la pregunta es otra.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  <!-- 5 · Bayes responde -->
+  <section class="slide layout-metrics" aria-label="Bayes responde">
+      <div class="slide-header">
+        <h4>Bayes responde</h4>
+        <span class="tag">Posterior</span>
+      </div>
+      <div class="slide-content">
+        <h2>Una distribución, tres preguntas</h2>
+        <p class="metrics-caption"><span class="code">p | datos ~ Beta(7,4)</span> &nbsp;&middot;&nbsp; mediana <strong>0.64</strong> &nbsp;&middot;&nbsp; IC 95% <strong>[0.35, 0.88]</strong></p>
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-value">0.83</div>
+            <div class="metric-label">P(p &gt; 0.5 | datos)</div>
+            <div class="metric-desc">La probabilidad posterior de que más de mitad de los chips funcionen.</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">0.62</div>
+            <div class="metric-label">P(p &gt; 0.6 | datos)</div>
+            <div class="metric-desc">El umbral práctico, leído directo de la posterior.</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">1.2%</div>
+            <div class="metric-label">P(≤4 éxitos en 20 | datos)</div>
+            <div class="metric-desc">Plug-in binomial: <strong>0.009%</strong>. La diferencia es la incertidumbre en <span class="code">p</span>.</div>
+          </div>
+        </div>
+        <div class="note-strip"><strong>El motor:</strong> <span class="code">posterior ∝ prior × likelihood</span> &nbsp;&middot;&nbsp; prior plano + 6E/3F → <span class="code">Beta(7,4)</span> &nbsp;&middot;&nbsp; la receta: samplear y contar.</div>
+        <p class="quote-cite">“Bayesian inference is really just counting and comparing of possibilities.” — <strong>SR2</strong></p>
+      </div>
+    </section>
+
+  <!-- 6 · Credible vs confidence -->
+  <section class="slide layout-split" aria-label="Credible vs confidence">
+      <div class="slide-header">
+        <h4>Credible vs confidence</h4>
+        <span class="tag">Interpretación</span>
+      </div>
+      <div class="slide-content">
+        <h2>Los dos intervalos miran cosas distintas</h2>
+        <div class="split-body">
+          <div class="split-left">
+            <h3>Bayes</h3>
+            <div class="big-stat" style="font-size:clamp(2.3rem,4vw,3.5rem); white-space:nowrap;">[0.35, 0.88]</div>
+            <p><strong>P(p ∈ [0.35, 0.88] | datos) = 0.95</strong></p>
+            <p>Hay 95% de probabilidad posterior de que <span class="code">p</span> esté ahí.</p>
+          </div>
+          <div class="split-right">
+            <h3>Frecuentista</h3>
+            <div class="big-stat" style="font-size:clamp(2rem,3.4vw,3rem); white-space:nowrap;">[0.30, 0.93]</div>
+            <p>"Si repitieras el experimento muchas veces, 95% de los intervalos así construidos cubrirían el <span class="code">p</span> verdadero."</p>
+          </div>
+        </div>
+        <div class="split-highlight" style="margin-top:1rem;">“The 95% is a <em>small world</em> number ... It is what the golem believes, but you are free to believe something else.”<cite>SR3</cite></div>
+        <div class="note-strip">No es "Bayes mejor": es otra pregunta.</div>
+      </div>
+    </section>
+
+  <!-- 7 · No cutoff -->
+  <section class="slide layout-quote" aria-label="No hay cutoff">
+      <div class="quote-decoration"></div>
+      <div class="quote-decoration-2"></div>
+      <div class="big-stat">0.62</div>
+      <blockquote>no es “significativo”.<br>Es evidencia.</blockquote>
+      <p class="quote-source"><strong>P(p &gt; 0.6 | datos) = 0.62</strong> — más de 60% de los chips funcionan. La evidencia es continua. Definí "sustancial" antes de ver los datos.</p>
+      <p class="quote-cite" style="text-align:center;">“This practice provides false comfort. Reality is not so clear-cut.” — <strong>BR8</strong></p>
+    </section>
+
+  <!-- 8 · Dos modelos -->
+  <section class="slide" aria-label="Mismos datos, dos modelos">
+      <div class="slide-header">
+        <h4>Mismos datos, dos modelos</h4>
+        <span class="tag">El DAG decide</span>
+      </div>
+      <div class="slide-content">
+        <h2>Incluir el hongo cambia la respuesta</h2>
+        <div class="model-grid">
+          <div class="model-card">
+            <div class="model-label">β<sub>T</sub> (cm) · sin F</div>
+            <div class="model-value">1.20</div>
+            <div class="model-interval">[0.69, 1.71]</div>
+            <div class="model-verdict good">el tratamiento funciona</div>
+          </div>
+          <div class="model-card">
+            <div class="model-label">β<sub>T</sub> (cm) · con F</div>
+            <div class="model-value">0.03</div>
+            <div class="model-interval">[-0.28, 0.34]</div>
+            <div class="model-verdict bad">“no funciona”</div>
+          </div>
+        </div>
+        <div class="split-highlight" style="margin-top:1rem;">Controlar <span class="code">F</span> bloquea <span class="code">T &rarr; F &rarr; H1</span>. El DAG decide, no el fit.</div>
+        <p class="quote-cite">“a correct inference about the treatment still depends upon omitting the post-treatment variable.” — <strong>SR6</strong></p>
+        <div class="note-strip">Simulación del libro (100 plantas, <span class="code">seed 1</span>). Intervalos de credibilidad 89%.</div>
+      </div>
+    </section>
+
+  <!-- 9 · La posterior responde -->
+  <section class="slide layout-metrics" aria-label="La posterior responde al problema causal">
+      <div class="slide-header">
+        <h4>La posterior responde</h4>
+        <span class="tag">Volvemos al invernadero</span>
+      </div>
+      <div class="slide-content">
+        <h2>Las tres preguntas, ahora con números</h2>
+        <p class="metrics-caption">Modelo sin <span class="code">F</span>: <span class="code">β<sub>T</sub> = 1.20 cm [0.69, 1.71]</span> (89% de credibilidad). El ATE frecuentista era <span class="code">1.05 cm [0.13, 1.95]</span>.</p>
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-value">&gt; 0.99</div>
+            <div class="metric-label">P(ATE &gt; 0 | datos)</div>
+            <div class="metric-desc">Casi toda la posterior está arriba de cero: el tratamiento ayuda.</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">0.81</div>
+            <div class="metric-label">P(0.5 &lt; ATE &lt; 1.5 cm | datos)</div>
+            <div class="metric-desc">La probabilidad de un efecto práctico, no solo distinto de cero.</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">0.78</div>
+            <div class="metric-label">P(&ge;5 de 10 plantas nuevas tratadas &gt; 14 cm | datos)</div>
+            <div class="metric-desc">Predictiva posterior: integra la incertidumbre en β y en la altura inicial.</div>
+          </div>
+        </div>
+        <div class="note-strip"><strong>La diferencia:</strong> el ATE es un número; la posterior es una distribución. La predictiva responde por 10 plantas nuevas, no por el efecto promedio.</div>
+        <p class="quote-cite">Números reproducibles: simulación del libro con <span class="code">seed 1</span>. Detalle y sensibilidad a <span class="code">x</span> en el notebook.</p>
+      </div>
+    </section>
+
+  <!-- 10 · Small world / large world -->
+  <section class="slide layout-split" aria-label="Small world / large world">
+      <div class="slide-header">
+        <h4>Small world / large world</h4>
+        <span class="tag">El límite</span>
+      </div>
+      <div class="slide-content">
+        <h2>Bayes es óptimo dentro del modelo; el mundo es más grande</h2>
+        <div class="split-body">
+          <div class="split-left">
+            <div class="world-visual">
+              <div class="world-large">
+                <div class="world-small">
+                  small world<br>
+                  <span style="font-weight:400; font-size:0.72em; color:var(--text-muted);">modelo</span>
+                </div>
+              </div>
+              <span class="world-label world-label-large">large world</span>
+            </div>
+          </div>
+          <div class="split-right">
+            <h3>Bayes es óptimo <em>dado</em> el modelo.</h3>
+            <ul class="insight-list">
+              <li>Los dos modelos son igual de bayesianos; uno responde la pregunta causal correcta.</li>
+              <li>El posterior no elige el DAG: lo elegís vos.</li>
+              <li>El large world se demuestra, no se deduce.</li>
+            </ul>
+            <div class="split-highlight">“The logical consistency of a model in the small world is no guarantee that it will be optimal in the large world. But it is certainly a warm comfort.”<cite>SR2</cite></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  <!-- 11 · Q&A -->
+  <section class="slide layout-closing" aria-label="Q&A">
+      <div class="closing-decoration"></div>
+      <div class="closing-decoration-2"></div>
+      <div class="accent-line" style="margin: 0 auto 1.5rem;"></div>
+      <h1>Q&amp;A</h1>
+      <p class="closing-sub">Preguntas, objeciones, casos. Después: libros y takeaways.</p>
+      <p class="closing-contact">Matias Moran &nbsp;&middot;&nbsp; Fundamentos matemáticos de la causalidad</p>
+    </section>
+
+  <!-- 12 · Libros -->
+  <section class="slide" aria-label="Libros y autores">
+      <div class="slide-header">
+        <h4>Libros y autores</h4>
+        <span class="tag">De dónde sale esto</span>
+      </div>
+      <div class="slide-content">
+        <h2>Dos libros, dos estilos</h2>
+        <div class="book-grid">
+          <div class="book-card">
+            <span class="book-tag">Bayes Rules!</span>
+            <h3>An Introduction to Applied Bayesian Modeling</h3>
+            <p class="book-authors">Alicia A. Johnson &nbsp;&middot;&nbsp; Miles Q. Ott &nbsp;&middot;&nbsp; Mine Dogucu</p>
+            <ul class="book-points">
+              <li>Introducción aplicada, con código y ejemplos.</li>
+              <li>Para aprender haciendo: prior → posterior → predicción.</li>
+            </ul>
+            <p class="book-chapters">Caps. 1, 2, 4, 8</p>
+          </div>
+          <div class="book-card">
+            <span class="book-tag">Statistical Rethinking</span>
+            <h3>A Bayesian Course with Examples in R and Stan</h3>
+            <p class="book-authors">Richard McElreath</p>
+            <ul class="book-points">
+              <li>Fundamentos conceptuales y DAGs.</li>
+              <li>Para pensar por qué, no solo cómo.</li>
+            </ul>
+            <p class="book-chapters">Caps. 1, 2, 3, 6</p>
+          </div>
+        </div>
+        <div class="split-highlight" style="margin-top:1.2rem;">Dos libros, dos estilos: uno te enseña a hacerlo; el otro, a pensar por qué.</div>
+        <div class="note-strip">Las citas textuales de la charla salen de estos dos libros.</div>
+      </div>
+    </section>
+
+  <!-- 13 · Takeaways -->
+  <section class="slide" aria-label="Key takeaways">
+      <div class="slide-header">
+        <h4>Key takeaways</h4>
+        <span class="tag">Para llevarse</span>
+      </div>
+      <div class="slide-content">
+        <h2>Cuatro ideas y un pendiente</h2>
+        <div class="takeaway-grid">
+          <div class="takeaway-card">
+            <div class="takeaway-num">01</div>
+            <div class="takeaway-text"><strong>Bayes = prior × likelihood → posterior.</strong> Actualizás, no descartás.</div>
+          </div>
+          <div class="takeaway-card">
+            <div class="takeaway-num">02</div>
+            <div class="takeaway-text"><strong>El posterior es el producto.</strong> Distribución completa: <span class="code">P(ATE&gt;0)</span>, <span class="code">P(0.5&lt;ATE&lt;1.5)</span>, predicciones. Sin cutoff.</div>
+          </div>
+          <div class="takeaway-card">
+            <div class="takeaway-num">03</div>
+            <div class="takeaway-text"><strong>El prior es una feature, no un bug.</strong> Con pocos datos, es la única forma de usar lo que sabés.</div>
+          </div>
+          <div class="takeaway-card">
+            <div class="takeaway-num">04</div>
+            <div class="takeaway-text"><strong>Óptimo en el small world; en el large world, el DAG manda.</strong></div>
+          </div>
+        </div>
+        <div class="split-highlight" style="margin-top:1.2rem;">“Bayes te da la pregunta que querés hacer. El DAG te dice si la pregunta es causal.”</div>
+        <div class="note-strip"><strong>No llegamos a ver:</strong> actualización secuencial, modelos jerárquicos, decision theory.</div>
+      </div>
+    </section>
+
+  <!-- 14 · Apéndice A: fairness -->
+  <section class="slide" aria-label="Apéndice A: fairness frecuentista">
+      <div class="slide-header">
+        <h4>Apéndice A</h4>
+        <span class="tag">Fairness frecuentista</span>
+      </div>
+      <div class="slide-content">
+        <h2>No es que no se pueda; es que no es la opción por defecto</h2>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Pregunta</th>
+              <th>Frecuentista sofisticado</th>
+              <th>Bayes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="code">P(p &gt; 0.5 | datos)</span></td>
+              <td>distribución de confianza</td>
+              <td>posterior</td>
+            </tr>
+            <tr>
+              <td><span class="code">P(p &gt; 0.6 | datos)</span></td>
+              <td>inferencia fiducial</td>
+              <td>posterior</td>
+            </tr>
+            <tr>
+              <td><span class="code">P(≤4 éxitos en 20 | datos)</span></td>
+              <td>bootstrap predictivo</td>
+              <td>predictiva posterior</td>
+            </tr>
+            <tr>
+              <td>actualizar secuencialmente</td>
+              <td>diseños secuenciales de grupo</td>
+              <td>posterior secuencial</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="split-highlight" style="margin-top:1rem;">Bayes lo hace con una sola receta: <strong>posterior → samplear → contar.</strong></div>
+        <div class="note-strip">Fiducial tiene sus caveats; el punto es que existe maquinaria. La interpretación no es la misma.</div>
+      </div>
+    </section>
+
+  <!-- 15 · Apéndice B: exoplaneta -->
+  <section class="slide layout-metrics" aria-label="Apéndice B: el prior cuando el dato es poco">
+      <div class="slide-header">
+        <h4>Apéndice B</h4>
+        <span class="tag">El prior cuando el dato es poco</span>
+      </div>
+      <div class="slide-content">
+        <h2>Un exoplaneta, no la Tierra</h2>
+        <p class="metrics-caption">El prior es una feature: con pocos datos, es la única forma de meter lo que sabés.</p>
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-value">0.706</div>
+            <div class="metric-label">Tierra · control</div>
+            <div class="metric-desc">El prior domina, y está bien: ya lo sabíamos.</div>
+            <ul class="metric-supports">
+              <li>Prior <span class="code">Beta(71,29)</span></li>
+              <li>6A/3T → <span class="code">Beta(77,32)</span></li>
+              <li>IC 95% <strong>[0.62, 0.79]</strong></li>
+            </ul>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">0.579</div>
+            <div class="metric-label">Exoplaneta · prior fuerte</div>
+            <div class="metric-desc">Esperábamos un planeta océano.</div>
+            <ul class="metric-supports">
+              <li>Prior <span class="code">Beta(7,3)</span></li>
+              <li>4A/5T → <span class="code">Beta(11,8)</span></li>
+              <li>IC 95% <strong>[0.36, 0.78]</strong></li>
+            </ul>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">0.462</div>
+            <div class="metric-label">Exoplaneta · prior débil</div>
+            <div class="metric-desc">El dato pesa más.</div>
+            <ul class="metric-supports">
+              <li>Prior <span class="code">Beta(2,2)</span></li>
+              <li>4A/5T → <span class="code">Beta(6,7)</span></li>
+              <li>IC 95% <strong>[0.21, 0.72]</strong></li>
+            </ul>
+          </div>
+        </div>
+        <div class="note-strip"><strong>Moraleja:</strong> con pocos datos, el prior es la única forma de meter el conocimiento de dominio. Con muchos, se diluye. No es trampa: es modelar.</div>
+      </div>
+    </section>
+
+  <!-- 16 · Apéndice C: predictiva -->
+  <section class="slide" aria-label="Apéndice C: predicción con la posterior">
+      <div class="slide-header">
+        <h4>Apéndice C</h4>
+        <span class="tag">Predicción</span>
+      </div>
+      <div class="slide-content">
+        <h2>La receta que generaliza: samplear y contar</h2>
+        <div class="model-grid">
+          <div class="model-card">
+            <div class="model-label">Predictiva posterior</div>
+            <div class="model-value">1.2%</div>
+            <div class="model-interval">P(≤4 éxitos en 20 | datos)</div>
+          </div>
+          <div class="model-card">
+            <div class="model-label">Plug-in binomial</div>
+            <div class="model-value">0.009%</div>
+            <div class="model-interval">Binomial(20, 0.667)</div>
+          </div>
+        </div>
+        <div class="split-highlight" style="margin-top:1rem;">Sampleás <span class="code">p</span> de <span class="code">Beta(7,4)</span>, simulás 20 chips, contás. Lo mismo con <span class="code">β<sub>T</sub></span> en el modelo causal.</div>
+        <div class="note-strip">El plug-in ignora la incertidumbre en <span class="code">p</span>; la predictiva posterior no.</div>
+      </div>
+    </section>
+
+</div>
+
+<!-- Chrome -->
+<div class="slide-counter" aria-live="polite"><span id="current">1</span> / <span id="total">16</span></div>
+<div class="keyboard-hint">← → &nbsp;·&nbsp; scroll &nbsp;·&nbsp; click para navegar</div>
+<div class="progress-bar" id="progress"></div>
+<div class="nav-controls">
+  <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)" aria-label="Slide anterior">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+  </button>
+  <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)" aria-label="Slide siguiente">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+  </button>
+  <button class="nav-btn" id="helpBtn" onclick="toggleHelp()" aria-label="Ayuda y atajos">?</button>
+  <button class="nav-btn" id="fsBtn" onclick="toggleFullscreen()" aria-label="Pantalla completa">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M16 3h3a2 2 0 0 1 2 2v3"></path><path d="M8 21H5a2 2 0 0 1-2-2v-3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg>
+  </button>
+</div>
+
+<!-- Help overlay -->
+<div class="help-overlay" id="helpOverlay" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+  <div class="help-panel">
+    <button class="help-close" id="helpClose" onclick="toggleHelp()" aria-label="Cerrar ayuda">&times;</button>
+    <h2 id="helpTitle">Navegación</h2>
+    <ul class="help-list">
+      <li><span>Siguiente / anterior</span><span><span class="help-key">←</span> <span class="help-key">→</span></span></li>
+      <li><span>Scroll del mouse</span><span class="help-key">scroll</span></li>
+      <li><span>Click: derecha avanza, izquierda retrocede</span><span class="help-key">click</span></li>
+      <li><span>Primera / última slide</span><span><span class="help-key">Home</span> <span class="help-key">End</span></span></li>
+      <li><span>Pantalla completa</span><span class="help-key">F</span></li>
+      <li><span>Esta ayuda</span><span class="help-key">?</span></li>
+    </ul>
+  </div>
+</div>
+<script>
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const currentEl = document.getElementById('current');
+    const totalEl = document.getElementById('total');
+    const progressEl = document.getElementById('progress');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const deck = document.getElementById('deck');
+    const helpOverlay = document.getElementById('helpOverlay');
+    const helpClose = document.getElementById('helpClose');
+
+    let current = 0;
+    let helpOpen = false;
+    const total = slides.length;
+
+    totalEl.textContent = total;
+
+    function updateSlide() {
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === current);
+        slide.classList.toggle('prev', i < current);
+        slide.setAttribute('aria-hidden', i === current ? 'false' : 'true');
+      });
+      currentEl.textContent = current + 1;
+      progressEl.style.width = ((current + 1) / total * 100) + '%';
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === total - 1;
+      if (location.hash !== '#' + (current + 1)) {
+        try { history.replaceState(null, '', '#' + (current + 1)); } catch (e) {}
+      }
+    }
+
+    function changeSlide(dir) {
+      const next = current + dir;
+      if (next >= 0 && next < total) {
+        current = next;
+        updateSlide();
+      }
+    }
+
+    function goTo(index) {
+      if (index >= 0 && index < total) {
+        current = index;
+        updateSlide();
+      }
+    }
+
+    function toggleHelp() {
+      helpOpen = !helpOpen;
+      helpOverlay.classList.toggle('open', helpOpen);
+      if (helpOpen) helpClose.focus();
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (helpOpen) toggleHelp();
+        return;
+      }
+      if (helpOpen) return;
+
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        changeSlide(1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+        e.preventDefault();
+        changeSlide(-1);
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        goTo(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        goTo(total - 1);
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      } else if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
+        e.preventDefault();
+        toggleHelp();
+      }
+    });
+
+    // Click: right side advances, left edge goes back.
+    deck.addEventListener('click', (e) => {
+      if (e.target.closest('button, a, input, textarea, select')) return;
+      if (helpOpen) return;
+      const rect = deck.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width;
+      if (x < 0.18) changeSlide(-1);
+      else changeSlide(1);
+    });
+
+    // Mouse wheel / trackpad.
+    let wheelLock = false;
+    deck.addEventListener('wheel', (e) => {
+      if (helpOpen) return;
+      if (Math.abs(e.deltaY) < 15 && Math.abs(e.deltaX) < 15) return;
+      if (wheelLock) return;
+      wheelLock = true;
+      setTimeout(() => { wheelLock = false; }, 650);
+      if (e.deltaY > 0 || e.deltaX > 0) changeSlide(1);
+      else changeSlide(-1);
+    }, { passive: true });
+
+    // Touch swipe.
+    let touchStartX = 0;
+    let touchStartY = 0;
+    deck.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+    deck.addEventListener('touchend', (e) => {
+      const dx = touchStartX - e.changedTouches[0].screenX;
+      const dy = touchStartY - e.changedTouches[0].screenY;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+        changeSlide(dx > 0 ? 1 : -1);
+      }
+    }, { passive: true });
+
+    helpOverlay.addEventListener('click', (e) => {
+      if (e.target === helpOverlay) toggleHelp();
+    });
+
+    // Deep link: open presentacion.html#7 to jump to slide 7.
+    function readHash() {
+      const match = location.hash.match(/^#(\d+)$/);
+      if (match) {
+        const index = parseInt(match[1], 10) - 1;
+        if (index >= 0 && index < total) current = index;
+      }
+    }
+
+    window.addEventListener('hashchange', () => {
+      readHash();
+      updateSlide();
+    });
+
+    readHash();
+    updateSlide();
+
+</script>
+</body>
+</html>

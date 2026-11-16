@@ -7,6 +7,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="vendor/tex-svg.js"></script>
 
   <style>
     :root {
@@ -1114,12 +1124,580 @@
     @media (prefers-reduced-motion: reduce) {
       .slide, .progress-bar, .nav-btn { transition: none; }
     }
+
+    /* Cover: blue metadata */
+    .layout-cover .meta {
+      color: var(--primary);
+      font-weight: 500;
+      font-size: clamp(0.82rem, 1vw, 0.94rem);
+      letter-spacing: 0.035em;
+    }
+
+    /* MathJax */
+    mjx-container { color: var(--text); }
+    mjx-container[display="true"] { margin: 0.35em 0 !important; }
+    .math-block { color: var(--text); }
+
+    /* DAG-only slide and side labels */
+    .layout-dag-hero .slide-content { justify-content: center; }
+    .layout-dag-hero h2 { text-align: center; margin-bottom: 2.2vh; }
+    .dag-hero { width: min(94%, 72vh); }
+    .dag-label.side {
+      transform: translate(0, -50%);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    /* Continue image */
+    .layout-continue {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .layout-continue .slide-content {
+      justify-content: center;
+      align-items: center;
+    }
+    .continue-img {
+      max-width: min(78vw, 1100px);
+      max-height: 60vh;
+      width: auto;
+      height: auto;
+      border-radius: 18px;
+      box-shadow: 0 18px 50px rgba(17, 17, 17, 0.12);
+    }
+    .continue-caption {
+      margin-top: 1.5rem;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: clamp(1rem, 1.4vw, 1.25rem);
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    /* CEO slide */
+    .layout-ceo .slide-content { justify-content: center; }
+    .ceo-split {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+      gap: clamp(1.5rem, 3.2vw, 3.2rem);
+      align-items: center;
+    }
+    .ceo-image-wrap {
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ceo-image-wrap img {
+      max-height: 62vh;
+      max-width: 100%;
+      object-fit: contain;
+      border-radius: 16px;
+      box-shadow: 0 16px 46px rgba(17, 17, 17, 0.14);
+    }
+    .ceo-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .ceo-copy h2 {
+      font-size: clamp(2rem, 3.4vw, 3rem);
+      margin: 0;
+      line-height: 1.05;
+    }
+    .ceo-lead {
+      font-size: clamp(1rem, 1.3vw, 1.2rem);
+      color: var(--text-muted);
+      max-width: none;
+      margin: 0;
+    }
+
+    /* Frequentist: progressive disclosure */
+    .layout-freq .slide-content { display: flex; flex-direction: column; }
+    .freq-top {
+      display: grid;
+      grid-template-columns: 1fr 1.12fr;
+      gap: 2rem;
+      align-items: start;
+    }
+    .layout-freq .insight-list { gap: 0.7rem; }
+    .freq-figures {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+    .freq-figure { margin: 0; }
+    .freq-figure img {
+      display: block;
+      width: 100%;
+      height: clamp(112px, 18vh, 190px);
+      object-fit: contain;
+    }
+    .freq-figure figcaption {
+      font-size: 0.68rem;
+      color: var(--text-light);
+      line-height: 1.3;
+      margin-top: 0.1rem;
+    }
+    .freq-bottom {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.8rem;
+      margin-top: 0.9rem;
+    }
+    .freq-bottom .split-highlight { margin: 0; }
+    .question-list.three {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+    }
+    .question-list.three li {
+      font-size: clamp(0.7rem, 0.82vw, 0.8rem);
+      padding: 0.48rem 0.6rem;
+      line-height: 1.35;
+    }
+
+    /* Bayes derivation */
+    .derive-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.88fr;
+      gap: 2rem;
+      align-items: start;
+      margin-top: 0.4rem;
+    }
+    .derive-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+    .derive-step {
+      display: grid;
+      grid-template-columns: 1.8rem 1fr;
+      gap: 0.75rem;
+      align-items: start;
+      padding: 0.7rem 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--card-bg);
+    }
+    .derive-step .step-num {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1.7;
+    }
+    .derive-step .math-block { font-size: clamp(0.86rem, 1.05vw, 1rem); }
+    .derive-note {
+      margin-top: 0.25rem;
+      font-size: clamp(0.72rem, 0.84vw, 0.8rem);
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .term-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .term-card {
+      padding: 0.9rem 1rem;
+      border-left: 4px solid var(--primary);
+      border-radius: 0 10px 10px 0;
+      background: var(--accent-light);
+    }
+    .term-card h4 { margin-bottom: 0.3rem; }
+    .term-card p {
+      font-size: clamp(0.78rem, 0.92vw, 0.88rem);
+      line-height: 1.4;
+    }
+
+    /* Beta-binomial example */
+    .beta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+      margin-top: 0.5rem;
+    }
+    .beta-card {
+      padding: 1.2rem 1.3rem;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      background: var(--card-bg);
+    }
+    .beta-card h4 { margin-bottom: 0.7rem; }
+    .beta-eq {
+      font-size: clamp(0.95rem, 1.18vw, 1.08rem);
+      color: var(--text);
+      margin-bottom: 0.55rem;
+      line-height: 1.5;
+    }
+    .beta-card p { font-size: clamp(0.78rem, 0.92vw, 0.88rem); }
+    .beta-chain {
+      margin-top: 1.1rem;
+      text-align: center;
+      font-size: clamp(1rem, 1.3vw, 1.2rem);
+      color: var(--primary);
+    }
+
+    /* Metric cards with plots */
+    .layout-metrics-plots .metric-card {
+      padding: 1rem 1.05rem;
+      gap: 0.35rem;
+    }
+    .metric-plot {
+      display: block;
+      width: 100%;
+      height: clamp(92px, 15vh, 150px);
+      object-fit: contain;
+      margin-bottom: 0.15rem;
+    }
+    .layout-metrics-plots .metric-value {
+      font-size: clamp(1.7rem, 2.6vw, 2.3rem);
+    }
+    .layout-metrics-plots .metric-label {
+      font-size: clamp(0.82rem, 1vw, 0.95rem);
+    }
+    .layout-metrics-plots .metric-desc {
+      font-size: clamp(0.72rem, 0.84vw, 0.82rem);
+    }
+
+    /* Credible vs confidence plots */
+    .layout-intervals .split-body { gap: 2rem; }
+    .interval-panel { gap: 0.55rem; }
+    .interval-panel .big-stat {
+      font-size: clamp(1.95rem, 3.2vw, 2.9rem);
+    }
+    .interval-plot {
+      display: block;
+      width: 100%;
+      height: clamp(112px, 22vh, 210px);
+      object-fit: contain;
+      margin-top: 0.35rem;
+    }
+
+    /* Model slide */
+    .model-layout {
+      display: grid;
+      grid-template-columns: 1.14fr 0.86fr;
+      gap: 1.8rem;
+      align-items: start;
+    }
+    .model-formulas {
+      padding: 0.8rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--card-bg);
+      font-size: clamp(0.82rem, 1vw, 0.95rem);
+    }
+    .model-side {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .model-kicker {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+    }
+    .model-big {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: clamp(1.8rem, 2.8vw, 2.4rem);
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+    }
+    .model-side p { font-size: clamp(0.8rem, 0.95vw, 0.9rem); }
+    .model-footer {
+      margin-top: 0.9rem;
+      padding: 0.72rem 0.95rem;
+      border-left: 4px solid var(--primary);
+      border-radius: 0 10px 10px 0;
+      background: var(--accent-light);
+      font-size: clamp(0.76rem, 0.9vw, 0.86rem);
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    /* Wide figure slide */
+    .figure-wide {
+      flex: 1;
+      min-height: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .figure-wide img {
+      max-width: 100%;
+      max-height: 56vh;
+      object-fit: contain;
+    }
+    .figure-wide figcaption {
+      margin-top: 0.55rem;
+      font-size: clamp(0.74rem, 0.9vw, 0.84rem);
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* Takeaways: larger closing list */
+    .takeaway-gaps {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin-top: 1rem;
+      padding-top: 0.9rem;
+      border-top: 2px solid var(--border);
+      min-height: 0;
+    }
+    .takeaway-gaps h3 {
+      font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+      margin-bottom: 0.7rem;
+      color: var(--text);
+    }
+    .takeaway-gaps ul {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.55rem 1.6rem;
+    }
+    .takeaway-gaps li {
+      position: relative;
+      padding-left: 1.3rem;
+      font-size: clamp(0.98rem, 1.18vw, 1.12rem);
+      color: var(--text);
+      line-height: 1.4;
+    }
+    .takeaway-gaps li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+    }
+
+    /* Appendix D */
+    .appendix-model-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.08fr;
+      gap: 1.4rem;
+      align-items: center;
+      margin-top: 0.1rem;
+    }
+    .model-grid-stack {
+      grid-template-columns: 1fr;
+      gap: 0.7rem;
+      margin-top: 0;
+    }
+    .model-grid-stack .model-card { padding: 0.95rem 1.2rem; }
+    .appendix-figure { margin: 0; }
+    .appendix-figure img {
+      display: block;
+      width: 100%;
+      max-height: 32vh;
+      object-fit: contain;
+    }
+    .appendix-figure figcaption {
+      margin-top: 0.25rem;
+      font-size: clamp(0.7rem, 0.84vw, 0.8rem);
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    .truth-panel {
+      margin-top: 0.75rem;
+      padding: 0.8rem 1rem;
+      border: 1.5px solid var(--primary);
+      border-radius: 12px;
+      background: var(--accent-light);
+      font-size: clamp(0.78rem, 0.95vw, 0.9rem);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .truth-panel strong { color: var(--primary); }
+
+    /* DAG caption */
+    .dag-note {
+      margin: 0.8rem auto 0;
+      max-width: 92%;
+      text-align: center;
+      font-size: clamp(0.76rem, 0.92vw, 0.88rem);
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+    .dag-note strong { color: var(--primary); }
+
+    /* ATE subslides */
+    .ate-questions {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-top: 0.35rem;
+    }
+    .ate-questions li {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: clamp(0.78rem, 0.98vw, 0.92rem);
+      color: var(--text);
+      line-height: 1.35;
+      padding: 0.45rem 0.65rem;
+      border-left: 3px solid var(--primary);
+      background: var(--accent-light);
+      border-radius: 0 8px 8px 0;
+    }
+
+    /* Hook questions */
+    .hook-questions {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.2rem;
+      padding: 1rem 1.4rem;
+      border-radius: 14px;
+      background: var(--accent-light);
+      border-left: 4px solid var(--primary);
+      max-width: 76vw;
+    }
+    .hook-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.42rem;
+      margin: 0;
+    }
+    .hook-bullets li {
+      position: relative;
+      padding-left: 1.1rem;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: clamp(0.92rem, 1.18vw, 1.1rem);
+      color: var(--text);
+      font-weight: 500;
+      line-height: 1.35;
+    }
+    .hook-bullets li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+    }
+
+    /* Single-step Bayes derivation */
+    .layout-derive .slide-content { justify-content: center; }
+    .derive-single {
+      width: min(94%, 980px);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.9rem, 2vh, 1.35rem);
+    }
+    .derive-single .derive-step {
+      grid-template-columns: 2.4rem 1fr;
+      gap: 1rem;
+      padding: clamp(1rem, 2.6vh, 1.55rem) clamp(1.2rem, 2vw, 1.8rem);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      background: var(--accent-light);
+    }
+    .derive-single .derive-step .step-num {
+      font-size: 0.92rem;
+      line-height: 1.9;
+    }
+    .derive-single .math-block { font-size: clamp(1.15rem, 1.9vw, 1.6rem); }
+    .derive-single .derive-step.final {
+      border: 3px solid var(--primary);
+      background: var(--accent-medium);
+      box-shadow: 0 14px 34px rgba(30, 43, 250, 0.18);
+    }
+    .hint-box {
+      padding: 0.95rem 1.2rem;
+      border-left: 5px solid var(--primary);
+      border-radius: 0 12px 12px 0;
+      background: var(--accent-light);
+      font-size: clamp(0.88rem, 1.05vw, 1rem);
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .hint-box p + p { margin-top: 0.42rem; }
+    .hint-box strong { color: var(--primary); }
+
+    /* Beta curves */
+    .beta-card { display: flex; flex-direction: column; }
+    .beta-plot {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: clamp(110px, 16vh, 140px);
+      object-fit: contain;
+      margin-top: auto;
+      padding-top: 0.4rem;
+    }
+
+    /* Model slide with DAG reference */
+    .model-layout-15 {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+      gap: clamp(1.5rem, 3vw, 3rem);
+      align-items: center;
+    }
+    .model-layout-15 .dag { width: min(100%, 50vh); }
+    .model-right {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      min-width: 0;
+    }
+    .model-formulas-large {
+      padding: clamp(1rem, 1.9vw, 1.5rem) clamp(1.1rem, 2vw, 1.7rem);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      background: var(--card-bg);
+      font-size: clamp(1.02rem, 1.4vw, 1.32rem);
+    }
+    .model-conclusion-space { min-height: clamp(3.4rem, 8vh, 5.2rem); }
+    .model-conclusion {
+      padding: 0.95rem 1.2rem;
+      border-left: 6px solid var(--primary);
+      border-radius: 0 12px 12px 0;
+      background: var(--accent-medium);
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: clamp(1.12rem, 1.62vw, 1.45rem);
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.35;
+    }
+    .model-conclusion strong { color: var(--primary); }
+
+    @media (max-height: 760px) {
+      .ceo-lead { max-width: none; }
+      .ceo-image-wrap img { max-height: 50vh; }
+      .freq-figure img { height: clamp(96px, 16vh, 150px); }
+      .metric-plot { height: clamp(78px, 13vh, 120px); }
+      .interval-plot { height: clamp(96px, 19vh, 170px); }
+      .figure-wide img { max-height: 51vh; }
+      .appendix-figure img { max-height: 24vh; }
+      .appendix-model-layout { gap: 1rem; }
+      .model-grid-stack .model-card { padding: 0.8rem 1rem; }
+      .model-footer { font-size: 0.76rem; }
+      .beta-plot { max-height: clamp(100px, 14vh, 120px); }
+      .model-formulas-large { font-size: clamp(0.92rem, 1.22vw, 1.12rem); }
+      .model-layout-15 .dag { width: min(100%, 44vh); }
+    }
   </style>
 </head>
 <body>
 <div class="deck" id="deck">
 
-  <!-- 1 · Título -->
+  <!-- 1 · Portada -->
   <section class="slide layout-cover active" aria-label="Título">
       <div class="cover-decoration"></div>
       <div class="cover-dots">
@@ -1129,70 +1707,339 @@
       </div>
       <div class="accent-line"></div>
       <h1>Inferencia bayesiana:<br>pensar con incertidumbre</h1>
-      <p class="subtitle">De la fábrica al invernadero: qué da Bayes y qué le sigue pidiendo al modelo.</p>
       <p class="meta">Matias Moran &nbsp;&middot;&nbsp; Fundamentos matemáticos de la causalidad &nbsp;&middot;&nbsp; 2° cuatrimestre 2026</p>
       <div class="cover-formula">
-        P(H | D) &prop; P(D | H) P(H)
+        \(P(H\mid D)\propto P(D\mid H)\,P(H)\)
         <small>La regla de Bayes</small>
       </div>
     </section>
 
-  <!-- 2 · El problema causal -->
+  <!-- 2 · El problema: solo el DAG -->
+  <section class="slide layout-dag-hero" aria-label="El problema: el invernadero">
+      <div class="slide-header">
+        <h4>El problema</h4>
+      </div>
+      <div class="slide-content">
+        <h2>El invernadero</h2>
+        <div class="dag dag-hero">
+          <svg viewBox="0 0 400 300" aria-hidden="true">
+            <defs>
+              <marker id="arrow-dag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(30,43,250,0.55)"></path>
+              </marker>
+            </defs>
+            <line x1="90" y1="87" x2="166" y2="222" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-dag)"></line>
+            <line x1="275" y1="87" x2="194" y2="222" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-dag)"></line>
+            <line x1="288" y1="87" x2="288" y2="140" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-dag)"></line>
+            <line x1="275" y1="197" x2="194" y2="224" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-dag)"></line>
+          </svg>
+          <div class="dag-node" style="left:18%; top:20%;">H0</div>
+          <div class="dag-label side" style="left:26%; top:20%;">altura inicial</div>
+          <div class="dag-node solid" style="left:72%; top:20%;">T</div>
+          <div class="dag-label side" style="left:80%; top:20%;">tratamiento</div>
+          <div class="dag-node" style="left:72%; top:56.7%;">F</div>
+          <div class="dag-label side" style="left:80%; top:56.7%;">hongo</div>
+          <div class="dag-node" style="left:45%; top:83.3%;">H1</div>
+          <div class="dag-label side" style="left:53%; top:83.3%;">altura final</div>
+        </div>
+        <p class="dag-note"><strong>100 plantas; 31 con hongo.</strong> El tratamiento se asignó al azar; el hongo apareció después.</p>
+      </div>
+    </section>
+
+  <!-- 3-1 · El problema causal y el ATE -->
   <section class="slide layout-split" aria-label="El problema causal: el invernadero">
       <div class="slide-header">
         <h4>El problema causal</h4>
-        <span class="tag">El invernadero</span>
       </div>
       <div class="slide-content">
-        <h2>Empecemos por el problema: ¿el tratamiento hace crecer?</h2>
+        <h2>¿El tratamiento hace crecer?</h2>
         <div class="split-body">
           <div class="split-left">
             <div class="dag">
               <svg viewBox="0 0 400 300" aria-hidden="true">
                 <defs>
-                  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                  <marker id="arrow-causal-1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                     <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(30,43,250,0.55)"></path>
                   </marker>
                 </defs>
-                <line x1="90" y1="89" x2="180" y2="221" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow)"></line>
-                <line x1="310" y1="89" x2="220" y2="221" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow)"></line>
-                <line x1="330" y1="90" x2="330" y2="140" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow)"></line>
-                <line x1="304" y1="186" x2="226" y2="234" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow)"></line>
+                <line x1="90" y1="87" x2="166" y2="222" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-causal-1)"></line>
+                <line x1="275" y1="87" x2="194" y2="222" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-causal-1)"></line>
+                <line x1="288" y1="87" x2="288" y2="140" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-causal-1)"></line>
+                <line x1="275" y1="197" x2="194" y2="224" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-causal-1)"></line>
               </svg>
-              <div class="dag-node" style="left:17.5%; top:20%;">H0</div>
-              <div class="dag-label" style="left:17.5%; top:31%;">altura inicial</div>
-              <div class="dag-node solid" style="left:82.5%; top:20%;">T</div>
-              <div class="dag-label" style="left:82.5%; top:31%;">tratamiento</div>
-              <div class="dag-node" style="left:82.5%; top:56.7%;">F</div>
-              <div class="dag-label" style="left:82.5%; top:67.7%;">hongo</div>
-              <div class="dag-node" style="left:50%; top:83.3%;">H1</div>
-              <div class="dag-label" style="left:50%; top:94.3%;">altura final</div>
+              <div class="dag-node" style="left:18%; top:20%;">H0</div>
+              <div class="dag-label side" style="left:26%; top:20%;">altura inicial</div>
+              <div class="dag-node solid" style="left:72%; top:20%;">T</div>
+              <div class="dag-label side" style="left:80%; top:20%;">tratamiento</div>
+              <div class="dag-node" style="left:72%; top:56.7%;">F</div>
+              <div class="dag-label side" style="left:80%; top:56.7%;">hongo</div>
+              <div class="dag-node" style="left:45%; top:83.3%;">H1</div>
+              <div class="dag-label side" style="left:53%; top:83.3%;">altura final</div>
             </div>
-            <p class="punchline" style="text-align:center; margin-top:0;">100 plantas &middot; T aleatorizado &middot; F post-tratamiento</p>
+            <p class="dag-note"><strong>100 plantas; 31 con hongo.</strong> El tratamiento se asignó al azar; el hongo apareció después.</p>
           </div>
           <div class="split-right">
-            <h3>El ATE de la materia</h3>
+            <h3>ATE</h3>
             <div class="big-stat" style="font-size:clamp(2.4rem,4.2vw,3.6rem); white-space:nowrap;">1.05 cm</div>
-            <p><span class="code">ATE = E[h1(1) &minus; h1(0)]</span></p>
-            <p><span class="code">ATE_hat = media(h1 | T=1) &minus; media(h1 | T=0)</span></p>
-            <p>IC 95% bootstrap <strong>[0.13, 1.95]</strong></p>
-            <p class="punchline">Un número. Tres preguntas que no responde:</p>
-            <ul class="question-list">
-              <li><span class="code">P(ATE &gt; 0 | datos)</span></li>
-              <li><span class="code">P(0.5 &lt; ATE &lt; 1.5 cm | datos)</span></li>
-              <li><span class="code">P(&ge;5 de 10 plantas nuevas tratadas &gt; 14 cm | datos)</span></li>
-            </ul>
-            <div class="note-strip">Volvemos a estas preguntas después de los chips.</div>
+            <div class="math-block">
+              \[
+              \mathrm{ATE}=\mathbb{E}[h_1(1)-h_1(0)]
+              \]
+              \[
+              \widehat{\mathrm{ATE}}=\left.\bar{h}_1\right|_{T=1}-\left.\bar{h}_1\right|_{T=0}=1.05\ \mathrm{cm}
+              \]
+            </div>
+            <p>IC 95% bootstrap <strong>[0.13, 1.95] cm</strong></p>
           </div>
         </div>
       </div>
     </section>
 
-  <!-- 3 · Hook: microchips -->
+  <!-- 3-2 · Primera pregunta -->
+  <section class="slide layout-split" aria-label="El problema causal: el invernadero">
+      <div class="slide-header">
+        <h4>El problema causal</h4>
+      </div>
+      <div class="slide-content">
+        <h2>¿El tratamiento hace crecer?</h2>
+        <div class="split-body">
+          <div class="split-left">
+            <div class="dag">
+              <svg viewBox="0 0 400 300" aria-hidden="true">
+                <defs>
+                  <marker id="arrow-causal-2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(30,43,250,0.55)"></path>
+                  </marker>
+                </defs>
+                <line x1="90" y1="87" x2="166" y2="222" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-causal-2)"></line>
+                <line x1="275" y1="87" x2="194" y2="222" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-causal-2)"></line>
+                <line x1="288" y1="87" x2="288" y2="140" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-causal-2)"></line>
+                <line x1="275" y1="197" x2="194" y2="224" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-causal-2)"></line>
+              </svg>
+              <div class="dag-node" style="left:18%; top:20%;">H0</div>
+              <div class="dag-label side" style="left:26%; top:20%;">altura inicial</div>
+              <div class="dag-node solid" style="left:72%; top:20%;">T</div>
+              <div class="dag-label side" style="left:80%; top:20%;">tratamiento</div>
+              <div class="dag-node" style="left:72%; top:56.7%;">F</div>
+              <div class="dag-label side" style="left:80%; top:56.7%;">hongo</div>
+              <div class="dag-node" style="left:45%; top:83.3%;">H1</div>
+              <div class="dag-label side" style="left:53%; top:83.3%;">altura final</div>
+            </div>
+            <p class="dag-note"><strong>100 plantas; 31 con hongo.</strong> El tratamiento se asignó al azar; el hongo apareció después.</p>
+          </div>
+          <div class="split-right">
+            <h3>ATE</h3>
+            <div class="big-stat" style="font-size:clamp(2.4rem,4.2vw,3.6rem); white-space:nowrap;">1.05 cm</div>
+            <div class="math-block">
+              \[
+              \mathrm{ATE}=\mathbb{E}[h_1(1)-h_1(0)]
+              \]
+              \[
+              \widehat{\mathrm{ATE}}=\left.\bar{h}_1\right|_{T=1}-\left.\bar{h}_1\right|_{T=0}=1.05\ \mathrm{cm}
+              \]
+            </div>
+            <p>IC 95% bootstrap <strong>[0.13, 1.95] cm</strong></p>
+            <ul class="ate-questions">
+              <li>¿Cuál es la probabilidad de que el tratamiento haga crecer, en promedio?</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  <!-- 3-3 · Segunda pregunta -->
+  <section class="slide layout-split" aria-label="El problema causal: el invernadero">
+      <div class="slide-header">
+        <h4>El problema causal</h4>
+      </div>
+      <div class="slide-content">
+        <h2>¿El tratamiento hace crecer?</h2>
+        <div class="split-body">
+          <div class="split-left">
+            <div class="dag">
+              <svg viewBox="0 0 400 300" aria-hidden="true">
+                <defs>
+                  <marker id="arrow-causal-3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(30,43,250,0.55)"></path>
+                  </marker>
+                </defs>
+                <line x1="90" y1="87" x2="166" y2="222" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-causal-3)"></line>
+                <line x1="275" y1="87" x2="194" y2="222" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-causal-3)"></line>
+                <line x1="288" y1="87" x2="288" y2="140" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-causal-3)"></line>
+                <line x1="275" y1="197" x2="194" y2="224" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-causal-3)"></line>
+              </svg>
+              <div class="dag-node" style="left:18%; top:20%;">H0</div>
+              <div class="dag-label side" style="left:26%; top:20%;">altura inicial</div>
+              <div class="dag-node solid" style="left:72%; top:20%;">T</div>
+              <div class="dag-label side" style="left:80%; top:20%;">tratamiento</div>
+              <div class="dag-node" style="left:72%; top:56.7%;">F</div>
+              <div class="dag-label side" style="left:80%; top:56.7%;">hongo</div>
+              <div class="dag-node" style="left:45%; top:83.3%;">H1</div>
+              <div class="dag-label side" style="left:53%; top:83.3%;">altura final</div>
+            </div>
+            <p class="dag-note"><strong>100 plantas; 31 con hongo.</strong> El tratamiento se asignó al azar; el hongo apareció después.</p>
+          </div>
+          <div class="split-right">
+            <h3>ATE</h3>
+            <div class="big-stat" style="font-size:clamp(2.4rem,4.2vw,3.6rem); white-space:nowrap;">1.05 cm</div>
+            <div class="math-block">
+              \[
+              \mathrm{ATE}=\mathbb{E}[h_1(1)-h_1(0)]
+              \]
+              \[
+              \widehat{\mathrm{ATE}}=\left.\bar{h}_1\right|_{T=1}-\left.\bar{h}_1\right|_{T=0}=1.05\ \mathrm{cm}
+              \]
+            </div>
+            <p>IC 95% bootstrap <strong>[0.13, 1.95] cm</strong></p>
+            <ul class="ate-questions">
+              <li>¿Cuál es la probabilidad de que el tratamiento haga crecer, en promedio?</li>
+              <li>¿Cuál es la probabilidad de que ese efecto esté entre 0.5 y 1.5 cm?</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  <!-- 3-4 · Tercera pregunta -->
+  <section class="slide layout-split" aria-label="El problema causal: el invernadero">
+      <div class="slide-header">
+        <h4>El problema causal</h4>
+      </div>
+      <div class="slide-content">
+        <h2>¿El tratamiento hace crecer?</h2>
+        <div class="split-body">
+          <div class="split-left">
+            <div class="dag">
+              <svg viewBox="0 0 400 300" aria-hidden="true">
+                <defs>
+                  <marker id="arrow-causal-4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(30,43,250,0.55)"></path>
+                  </marker>
+                </defs>
+                <line x1="90" y1="87" x2="166" y2="222" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-causal-4)"></line>
+                <line x1="275" y1="87" x2="194" y2="222" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-causal-4)"></line>
+                <line x1="288" y1="87" x2="288" y2="140" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-causal-4)"></line>
+                <line x1="275" y1="197" x2="194" y2="224" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-causal-4)"></line>
+              </svg>
+              <div class="dag-node" style="left:18%; top:20%;">H0</div>
+              <div class="dag-label side" style="left:26%; top:20%;">altura inicial</div>
+              <div class="dag-node solid" style="left:72%; top:20%;">T</div>
+              <div class="dag-label side" style="left:80%; top:20%;">tratamiento</div>
+              <div class="dag-node" style="left:72%; top:56.7%;">F</div>
+              <div class="dag-label side" style="left:80%; top:56.7%;">hongo</div>
+              <div class="dag-node" style="left:45%; top:83.3%;">H1</div>
+              <div class="dag-label side" style="left:53%; top:83.3%;">altura final</div>
+            </div>
+            <p class="dag-note"><strong>100 plantas; 31 con hongo.</strong> El tratamiento se asignó al azar; el hongo apareció después.</p>
+          </div>
+          <div class="split-right">
+            <h3>ATE</h3>
+            <div class="big-stat" style="font-size:clamp(2.4rem,4.2vw,3.6rem); white-space:nowrap;">1.05 cm</div>
+            <div class="math-block">
+              \[
+              \mathrm{ATE}=\mathbb{E}[h_1(1)-h_1(0)]
+              \]
+              \[
+              \widehat{\mathrm{ATE}}=\left.\bar{h}_1\right|_{T=1}-\left.\bar{h}_1\right|_{T=0}=1.05\ \mathrm{cm}
+              \]
+            </div>
+            <p>IC 95% bootstrap <strong>[0.13, 1.95] cm</strong></p>
+            <ul class="ate-questions">
+              <li>¿Cuál es la probabilidad de que el tratamiento haga crecer, en promedio?</li>
+              <li>¿Cuál es la probabilidad de que ese efecto esté entre 0.5 y 1.5 cm?</li>
+              <li>¿Cuál es la probabilidad de que al menos 5 de 10 plantas nuevas tratadas superen los 14 cm?</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  <!-- 3-5 · El cierre: un número, todavía no una respuesta -->
+  <section class="slide layout-split" aria-label="El problema causal: el invernadero">
+      <div class="slide-header">
+        <h4>El problema causal</h4>
+      </div>
+      <div class="slide-content">
+        <h2>¿El tratamiento hace crecer?</h2>
+        <div class="split-body">
+          <div class="split-left">
+            <div class="dag">
+              <svg viewBox="0 0 400 300" aria-hidden="true">
+                <defs>
+                  <marker id="arrow-causal-5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(30,43,250,0.55)"></path>
+                  </marker>
+                </defs>
+                <line x1="90" y1="87" x2="166" y2="222" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-causal-5)"></line>
+                <line x1="275" y1="87" x2="194" y2="222" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-causal-5)"></line>
+                <line x1="288" y1="87" x2="288" y2="140" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-causal-5)"></line>
+                <line x1="275" y1="197" x2="194" y2="224" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-causal-5)"></line>
+              </svg>
+              <div class="dag-node" style="left:18%; top:20%;">H0</div>
+              <div class="dag-label side" style="left:26%; top:20%;">altura inicial</div>
+              <div class="dag-node solid" style="left:72%; top:20%;">T</div>
+              <div class="dag-label side" style="left:80%; top:20%;">tratamiento</div>
+              <div class="dag-node" style="left:72%; top:56.7%;">F</div>
+              <div class="dag-label side" style="left:80%; top:56.7%;">hongo</div>
+              <div class="dag-node" style="left:45%; top:83.3%;">H1</div>
+              <div class="dag-label side" style="left:53%; top:83.3%;">altura final</div>
+            </div>
+            <p class="dag-note"><strong>100 plantas; 31 con hongo.</strong> El tratamiento se asignó al azar; el hongo apareció después.</p>
+          </div>
+          <div class="split-right">
+            <h3>ATE</h3>
+            <div class="big-stat" style="font-size:clamp(2.4rem,4.2vw,3.6rem); white-space:nowrap;">1.05 cm</div>
+            <div class="math-block">
+              \[
+              \mathrm{ATE}=\mathbb{E}[h_1(1)-h_1(0)]
+              \]
+              \[
+              \widehat{\mathrm{ATE}}=\left.\bar{h}_1\right|_{T=1}-\left.\bar{h}_1\right|_{T=0}=1.05\ \mathrm{cm}
+              \]
+            </div>
+            <p>IC 95% bootstrap <strong>[0.13, 1.95] cm</strong></p>
+            <ul class="ate-questions">
+              <li>¿Cuál es la probabilidad de que el tratamiento haga crecer, en promedio?</li>
+              <li>¿Cuál es la probabilidad de que ese efecto esté entre 0.5 y 1.5 cm?</li>
+              <li>¿Cuál es la probabilidad de que al menos 5 de 10 plantas nuevas tratadas superen los 14 cm?</li>
+            </ul>
+            <p class="punchline">Un número. Todavía no una respuesta a la decisión.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+  <!-- 4 · Continuará -->
+  <section class="slide layout-continue" aria-label="Volvemos a las preguntas">
+      <div class="slide-content">
+        <img class="continue-img" src="continue.jpg" alt="Continuará">
+        <p class="continue-caption">Volvemos a estas preguntas.</p>
+      </div>
+    </section>
+
+  <!-- 5 · CEO de NVIDIA -->
+  <section class="slide layout-ceo" aria-label="Sos el nuevo CEO de NVIDIA">
+      <div class="slide-header">
+        <h4>CEO de NVIDIA</h4>
+      </div>
+      <div class="slide-content">
+        <div class="ceo-split">
+          <div class="ceo-image-wrap">
+            <img src="jensen.jpeg" alt="Jensen Huang, CEO de NVIDIA">
+          </div>
+          <div class="ceo-copy">
+            <h2>Sos el nuevo CEO</h2>
+            <p class="ceo-lead">Tu primer tarea es decidir si es rentable fabricar los nuevos chips.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  <!-- 6 · Hook: microchips -->
   <section class="slide layout-hook" aria-label="Hook: los microchips">
       <div class="slide-header">
-        <h4>El hook</h4>
-        <span class="tag">9 chips</span>
+        <h4>CEO de NVIDIA</h4>
       </div>
       <div class="slide-content">
         <h2>¿Qué fracción de los chips sale bien?</h2>
@@ -1209,179 +2056,487 @@
           <div class="toss toss-e">E</div>
         </div>
         <div class="toss-legend">E = éxito (funciona) &nbsp;&middot;&nbsp; F = fallo (defectuoso)</div>
-        <div class="hook-question">
+        <div class="hook-questions">
           <span class="hook-big">?</span>
-          <p>Antes de calcular: ¿más o menos de mitad funcionan? ¿Y más de 60%?</p>
+          <ul class="hook-bullets">
+            <li>¿Más o menos de la mitad funcionan?</li>
+            <li>¿Y más del 60%?</li>
+            <li>Si fabrico 20 chips nuevos, ¿cuántos podrían fallar?</li>
+            <li>¿Qué probabilidad hay de que funcionen 4 o menos?</li>
+          </ul>
         </div>
-        <div class="note-strip">Apuestas primero. Fórmulas después. La intuición ya está haciendo Bayes.</div>
       </div>
     </section>
 
-  <!-- 4 · Frecuentista -->
-  <section class="slide layout-split" aria-label="El enfoque frecuentista y su techo">
+  <!-- 7 · Frecuentista: lo que da -->
+  <section class="slide layout-split layout-freq" aria-label="El enfoque frecuentista: lo que da">
       <div class="slide-header">
         <h4>El enfoque frecuentista</h4>
-        <span class="tag">Y su techo</span>
       </div>
       <div class="slide-content">
-        <h2>Con 9 chips, el enfoque frecuentista te deja a mitad de camino</h2>
-        <div class="split-body">
-          <div class="split-left">
+        <h2>¿Sabemos responder las preguntas?</h2>
+        <div class="freq-top">
+          <div class="freq-bullets">
             <h3>Lo que te da</h3>
             <ul class="insight-list">
-              <li><strong>MLE</strong> <span class="code">p̂ = 6/9 = 0.667</span></li>
-              <li><strong>IC 95% exacto</strong> <span class="code">[0.30, 0.93]</span></li>
-              <li><strong>Test <span class="code">H0: p = 0.5</span></strong> <span class="code">p ≈ 0.25</span> (una cola) / <span class="code">0.51</span> (dos colas)</li>
+              <li><strong>MLE</strong> \(\hat p = 6/9 = 0.667\)</li>
+              <li><strong>IC 95% exacto</strong> \([0.30, 0.93]\)</li>
+              <li><strong>Test \(H_0:p=0.5\)</strong> <span class="code">valor p ≈ 0.25</span> (una cola) / <span class="code">0.51</span> (dos colas)</li>
               <li><strong>Conclusión</strong> "no rechazo que la mitad funcione"</li>
             </ul>
           </div>
-          <div class="split-right">
-            <div class="split-highlight">
-              <strong>Lo que no te da</strong>
-              <ul style="list-style:none; display:flex; flex-direction:column; gap:0.5rem; margin-top:0.65rem;">
-                <li><span class="code">P(p &gt; 0.5 | datos)</span></li>
-                <li><span class="code">P(p &gt; 0.6 | datos)</span></li>
-                <li><span class="code">P(≤4 éxitos en 20 | datos)</span></li>
-              </ul>
+          <div class="freq-figures">
+            <figure class="freq-figure">
+              <img src="figuras/microchip_frecuentista_bootstrap.png" alt="Distribución bootstrap de la fracción de chips que funcionan">
+              <figcaption>Bootstrap: 10.000 remuestreos de 9 chips.</figcaption>
+            </figure>
+            <figure class="freq-figure">
+              <img src="figuras/microchip_frecuentista_test.png" alt="Distribución binomial bajo la hipótesis nula p igual a 0.5">
+              <figcaption>Bajo \(H_0:p=0.5\), observar 6 o más éxitos tiene probabilidad 0.25.</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="freq-bottom"></div>
+      </div>
+    </section>
+
+  <!-- 8 · Frecuentista: lo que no da -->
+  <section class="slide layout-split layout-freq" aria-label="El enfoque frecuentista: lo que no da">
+      <div class="slide-header">
+        <h4>El enfoque frecuentista</h4>
+      </div>
+      <div class="slide-content">
+        <h2>¿Sabemos responder las preguntas?</h2>
+        <div class="freq-top">
+          <div class="freq-bullets">
+            <h3>Lo que te da</h3>
+            <ul class="insight-list">
+              <li><strong>MLE</strong> \(\hat p = 6/9 = 0.667\)</li>
+              <li><strong>IC 95% exacto</strong> \([0.30, 0.93]\)</li>
+              <li><strong>Test \(H_0:p=0.5\)</strong> <span class="code">valor p ≈ 0.25</span> (una cola) / <span class="code">0.51</span> (dos colas)</li>
+              <li><strong>Conclusión</strong> "no rechazo que la mitad funcione"</li>
+            </ul>
+          </div>
+          <div class="freq-figures">
+            <figure class="freq-figure">
+              <img src="figuras/microchip_frecuentista_bootstrap.png" alt="Distribución bootstrap de la fracción de chips que funcionan">
+              <figcaption>Bootstrap: 10.000 remuestreos de 9 chips.</figcaption>
+            </figure>
+            <figure class="freq-figure">
+              <img src="figuras/microchip_frecuentista_test.png" alt="Distribución binomial bajo la hipótesis nula p igual a 0.5">
+              <figcaption>Bajo \(H_0:p=0.5\), observar 6 o más éxitos tiene probabilidad 0.25.</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="freq-bottom">
+          <div class="split-highlight">
+            <h3>Lo que no te da</h3>
+            <ul class="question-list three">
+              <li>\(P(p>0.5\mid \text{datos})\)</li>
+              <li>\(P(p>0.6\mid \text{datos})\)</li>
+              <li>\(P(K\le 4\text{ en }20\mid \text{datos})\)</li>
+            </ul>
+          </div>
+          <p class="punchline">El test responde \(P(\text{datos}\mid H)\), no \(P(H\mid \text{datos})\).</p>
+        </div>
+      </div>
+    </section>
+
+  <!-- 9-1 · La regla de Bayes: bloque 01 -->
+  <section class="slide layout-derive" aria-label="La regla de Bayes">
+      <div class="slide-header">
+        <h4>La regla de Bayes</h4>
+      </div>
+      <div class="slide-content">
+        <h2>Cómo se deriva, y qué significa cada término</h2>
+        <div class="derive-single">
+          <div class="derive-step">
+            <span class="step-num">01</span>
+            <div>
+              <div class="math-block">\[P(H\mid D)\,P(D)=P(D\mid H)\,P(H)\]</div>
             </div>
-            <p class="punchline">El test responde <span class="code">P(datos | H)</span>, no <span class="code">P(H | datos)</span>.</p>
-            <div class="note-strip"><strong>Misma idea, otra pregunta:</strong> test positivo en enfermedad rara → <span class="code">P(enfermo | +) = 25%</span> vs <span class="code">P(+ | sano) = 9.4%</span>. El test no está mal; la pregunta es otra.</div>
+          </div>
+          <div class="hint-box">
+            <p><strong>Posterior</strong> \(P(H\mid D)\): lo que creés después de ver los datos.</p>
+            <p><strong>Likelihood</strong> \(P(D\mid H)\): qué tan probables son los datos si \(H\) fuera cierto.</p>
+            <p><strong>Prior</strong> \(P(H)\): lo que creías antes de ver los datos.</p>
           </div>
         </div>
       </div>
     </section>
 
-  <!-- 5 · Bayes responde -->
-  <section class="slide layout-metrics" aria-label="Bayes responde">
+  <!-- 9-2 · La regla de Bayes: bloque 02 -->
+  <section class="slide layout-derive" aria-label="La regla de Bayes">
+      <div class="slide-header">
+        <h4>La regla de Bayes</h4>
+      </div>
+      <div class="slide-content">
+        <h2>Cómo se deriva, y qué significa cada término</h2>
+        <div class="derive-single">
+          <div class="derive-step">
+            <span class="step-num">02</span>
+            <div>
+              <div class="math-block">\[P(H\mid D)=\frac{P(D\mid H)\,P(H)}{P(D)}\]</div>
+            </div>
+          </div>
+          <div class="hint-box">
+            <p>Dividimos ambos lados por \(P(D)\): la probabilidad de los datos bajo todos los modelos posibles.</p>
+            <p>Ese denominador <strong>normaliza</strong> la posterior; no cambia qué hipótesis queda mejor rankeada.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  <!-- 9-3 · La regla de Bayes: bloque 03, forma final -->
+  <section class="slide layout-derive" aria-label="La regla de Bayes">
+      <div class="slide-header">
+        <h4>La regla de Bayes</h4>
+      </div>
+      <div class="slide-content">
+        <h2>Cómo se deriva, y qué significa cada término</h2>
+        <div class="derive-single">
+          <div class="derive-step final">
+            <span class="step-num">03</span>
+            <div>
+              <div class="math-block">\[P(H\mid D)\propto P(D\mid H)\,P(H)\]</div>
+            </div>
+          </div>
+          <div class="hint-box">
+            <p>\(P(D)\) es constante una vez observados los datos: normaliza, no cambia el ranking.</p>
+            <p>La posterior es <strong>proporcional a likelihood × prior</strong>. Esa es la forma que importa para calcular.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+  <!-- 10 · Prior, likelihood y posterior -->
+  <section class="slide layout-beta" aria-label="Prior, likelihood y posterior">
+      <div class="slide-header">
+        <h4>El ejemplo</h4>
+      </div>
+      <div class="slide-content">
+        <h2>Prior, likelihood y posterior, en concreto</h2>
+        <div class="beta-grid">
+          <div class="beta-card">
+            <h4>Prior</h4>
+            <div class="beta-eq">\(p\sim \mathrm{Beta}(1,1)\)</div>
+            <p>Plano: todos los valores entre 0 y 1, igual de plausibles.</p>
+            <img class="beta-plot" src="figuras/beta_prior.png" alt="Densidad plana del prior Beta(1,1)">
+          </div>
+          <div class="beta-card">
+            <h4>Likelihood</h4>
+            <div class="beta-eq">\(y\mid p\sim \mathrm{Binomial}(9,p)\)</div>
+            <p>Con \(y=6\): \(p^6(1-p)^3\).</p>
+            <img class="beta-plot" src="figuras/beta_likelihood.png" alt="Likelihood binomial para 6 éxitos en 9 chips">
+          </div>
+          <div class="beta-card">
+            <h4>Posterior</h4>
+            <div class="beta-eq">\(p\mid y\sim \mathrm{Beta}(7,4)\)</div>
+            <p>Sumar 6 éxitos y 3 fallos al prior plano.</p>
+            <img class="beta-plot" src="figuras/beta_posterior.png" alt="Densidad posterior Beta(7,4)">
+          </div>
+        </div>
+        <div class="beta-chain">\[
+          \mathrm{Beta}(1,1)+6E+3F\;\longrightarrow\;\mathrm{Beta}(7,4)
+        \]</div>
+      </div>
+    </section>
+
+  <!-- 11 · Bayes responde -->
+  <section class="slide layout-metrics layout-metrics-plots" aria-label="Bayes responde">
       <div class="slide-header">
         <h4>Bayes responde</h4>
-        <span class="tag">Posterior</span>
       </div>
       <div class="slide-content">
         <h2>Una distribución, tres preguntas</h2>
-        <p class="metrics-caption"><span class="code">p | datos ~ Beta(7,4)</span> &nbsp;&middot;&nbsp; mediana <strong>0.64</strong> &nbsp;&middot;&nbsp; IC 95% <strong>[0.35, 0.88]</strong></p>
+        <p class="metrics-caption">\(p\mid \text{datos}\sim \mathrm{Beta}(7,4)\) &nbsp;&middot;&nbsp; mediana <strong>0.64</strong> &nbsp;&middot;&nbsp; IC 95% <strong>[0.35, 0.88]</strong></p>
         <div class="metrics-row">
           <div class="metric-card">
+            <img class="metric-plot" src="figuras/microchip_beta_gt_05.png" alt="Posterior Beta con área p mayor a 0.5">
             <div class="metric-value">0.83</div>
-            <div class="metric-label">P(p &gt; 0.5 | datos)</div>
+            <div class="metric-label">\(P(p>0.5\mid \text{datos})\)</div>
             <div class="metric-desc">La probabilidad posterior de que más de mitad de los chips funcionen.</div>
           </div>
           <div class="metric-card">
+            <img class="metric-plot" src="figuras/microchip_beta_gt_06.png" alt="Posterior Beta con área p mayor a 0.6">
             <div class="metric-value">0.62</div>
-            <div class="metric-label">P(p &gt; 0.6 | datos)</div>
+            <div class="metric-label">\(P(p>0.6\mid \text{datos})\)</div>
             <div class="metric-desc">El umbral práctico, leído directo de la posterior.</div>
           </div>
           <div class="metric-card">
+            <img class="metric-plot" src="figuras/microchip_pp_20.png" alt="Predictiva posterior del número de éxitos en 20 chips">
             <div class="metric-value">1.2%</div>
-            <div class="metric-label">P(≤4 éxitos en 20 | datos)</div>
-            <div class="metric-desc">Plug-in binomial: <strong>0.009%</strong>. La diferencia es la incertidumbre en <span class="code">p</span>.</div>
+            <div class="metric-label">\(P(K\le 4\text{ en }20\mid \text{datos})\)</div>
+            <div class="metric-desc">Plug-in binomial: <strong>0.009%</strong>. La diferencia es la incertidumbre en \(p\).</div>
           </div>
         </div>
-        <div class="note-strip"><strong>El motor:</strong> <span class="code">posterior ∝ prior × likelihood</span> &nbsp;&middot;&nbsp; prior plano + 6E/3F → <span class="code">Beta(7,4)</span> &nbsp;&middot;&nbsp; la receta: samplear y contar.</div>
-        <p class="quote-cite">“Bayesian inference is really just counting and comparing of possibilities.” — <strong>SR2</strong></p>
       </div>
     </section>
 
-  <!-- 6 · Credible vs confidence -->
-  <section class="slide layout-split" aria-label="Credible vs confidence">
+  <!-- 12 · Credible vs confidence -->
+  <section class="slide layout-split layout-intervals" aria-label="Credible vs confidence">
       <div class="slide-header">
         <h4>Credible vs confidence</h4>
-        <span class="tag">Interpretación</span>
       </div>
       <div class="slide-content">
         <h2>Los dos intervalos miran cosas distintas</h2>
         <div class="split-body">
-          <div class="split-left">
+          <div class="split-left interval-panel">
             <h3>Bayes</h3>
-            <div class="big-stat" style="font-size:clamp(2.3rem,4vw,3.5rem); white-space:nowrap;">[0.35, 0.88]</div>
-            <p><strong>P(p ∈ [0.35, 0.88] | datos) = 0.95</strong></p>
-            <p>Hay 95% de probabilidad posterior de que <span class="code">p</span> esté ahí.</p>
+            <div class="big-stat">[0.35, 0.88]</div>
+            <p>\(P(p\in[0.35,0.88]\mid \text{datos})=0.95\)</p>
+            <p>Hay 95% de probabilidad posterior de que \(p\) esté ahí.</p>
+            <img class="interval-plot" src="figuras/credible_beta.png" alt="Posterior Beta con intervalo creíble del 95%">
           </div>
-          <div class="split-right">
+          <div class="split-right interval-panel">
             <h3>Frecuentista</h3>
-            <div class="big-stat" style="font-size:clamp(2rem,3.4vw,3rem); white-space:nowrap;">[0.30, 0.93]</div>
-            <p>"Si repitieras el experimento muchas veces, 95% de los intervalos así construidos cubrirían el <span class="code">p</span> verdadero."</p>
+            <div class="big-stat">[0.30, 0.93]</div>
+            <p>"Si repitieras el experimento muchas veces, 95% de los intervalos así construidos cubrirían el \(p\) verdadero."</p>
+            <img class="interval-plot" src="figuras/confidence_interval.png" alt="Intervalo de confianza exacto del 95%">
           </div>
         </div>
-        <div class="split-highlight" style="margin-top:1rem;">“The 95% is a <em>small world</em> number ... It is what the golem believes, but you are free to believe something else.”<cite>SR3</cite></div>
-        <div class="note-strip">No es "Bayes mejor": es otra pregunta.</div>
       </div>
     </section>
 
-  <!-- 7 · No cutoff -->
+  <!-- 13 · No cutoff -->
   <section class="slide layout-quote" aria-label="No hay cutoff">
       <div class="quote-decoration"></div>
       <div class="quote-decoration-2"></div>
       <div class="big-stat">0.62</div>
       <blockquote>no es “significativo”.<br>Es evidencia.</blockquote>
-      <p class="quote-source"><strong>P(p &gt; 0.6 | datos) = 0.62</strong> — más de 60% de los chips funcionan. La evidencia es continua. Definí "sustancial" antes de ver los datos.</p>
-      <p class="quote-cite" style="text-align:center;">“This practice provides false comfort. Reality is not so clear-cut.” — <strong>BR8</strong></p>
+      <p class="quote-source"><strong>\(P(p>0.6\mid \text{datos})=0.62\)</strong> — hay 62% de probabilidad posterior de que más de 60% funcione. La evidencia es continua. Definí "sustancial" antes de ver los datos.</p>
+      <p class="quote-cite" style="text-align:center;">“This practice provides false comfort. Reality is not so clear-cut.” — <strong>Bayes Rules!</strong></p>
     </section>
 
-  <!-- 8 · Dos modelos -->
-  <section class="slide" aria-label="Mismos datos, dos modelos">
+  <!-- 14 · Volviendo al caso original -->
+  <section class="slide layout-split" aria-label="Volviendo a nuestro caso original">
       <div class="slide-header">
-        <h4>Mismos datos, dos modelos</h4>
-        <span class="tag">El DAG decide</span>
+        <h4>El invernadero</h4>
       </div>
       <div class="slide-content">
-        <h2>Incluir el hongo cambia la respuesta</h2>
-        <div class="model-grid">
-          <div class="model-card">
-            <div class="model-label">β<sub>T</sub> (cm) · sin F</div>
-            <div class="model-value">1.20</div>
-            <div class="model-interval">[0.69, 1.71]</div>
-            <div class="model-verdict good">el tratamiento funciona</div>
+        <h2>Volviendo a nuestro caso original...</h2>
+        <div class="split-body">
+          <div class="split-left">
+            <div class="dag">
+              <svg viewBox="0 0 400 300" aria-hidden="true">
+                <defs>
+                  <marker id="arrow-summary" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(30,43,250,0.55)"></path>
+                  </marker>
+                </defs>
+                <line x1="90" y1="87" x2="166" y2="222" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-summary)"></line>
+                <line x1="275" y1="87" x2="194" y2="222" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-summary)"></line>
+                <line x1="288" y1="87" x2="288" y2="140" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-summary)"></line>
+                <line x1="275" y1="197" x2="194" y2="224" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-summary)"></line>
+              </svg>
+              <div class="dag-node" style="left:18%; top:20%;">H0</div>
+              <div class="dag-label side" style="left:26%; top:20%;">altura inicial</div>
+              <div class="dag-node solid" style="left:72%; top:20%;">T</div>
+              <div class="dag-label side" style="left:80%; top:20%;">tratamiento</div>
+              <div class="dag-node" style="left:72%; top:56.7%;">F</div>
+              <div class="dag-label side" style="left:80%; top:56.7%;">hongo</div>
+              <div class="dag-node" style="left:45%; top:83.3%;">H1</div>
+              <div class="dag-label side" style="left:53%; top:83.3%;">altura final</div>
+            </div>
           </div>
-          <div class="model-card">
-            <div class="model-label">β<sub>T</sub> (cm) · con F</div>
-            <div class="model-value">0.03</div>
-            <div class="model-interval">[-0.28, 0.34]</div>
-            <div class="model-verdict bad">“no funciona”</div>
+          <div class="split-right">
+            <h3>Tres preguntas que el ATE no responde</h3>
+            <ul class="question-list">
+              <li>\(P(\mathrm{ATE}>0\mid \text{datos})\)</li>
+              <li>\(P(0.5<\mathrm{ATE}<1.5\text{ cm}\mid \text{datos})\)</li>
+              <li>\(P(\ge 5\text{ de }10\text{ plantas nuevas tratadas}>14\text{ cm}\mid \text{datos})\)</li>
+            </ul>
+            <div class="note-strip">El ATE era \(1.05\ \mathrm{cm}\) \([0.13,1.95]\). Ninguna de estas tres preguntas era parte de ese número.</div>
           </div>
         </div>
-        <div class="split-highlight" style="margin-top:1rem;">Controlar <span class="code">F</span> bloquea <span class="code">T &rarr; F &rarr; H1</span>. El DAG decide, no el fit.</div>
-        <p class="quote-cite">“a correct inference about the treatment still depends upon omitting the post-treatment variable.” — <strong>SR6</strong></p>
-        <div class="note-strip">Simulación del libro (100 plantas, <span class="code">seed 1</span>). Intervalos de credibilidad 89%.</div>
       </div>
     </section>
 
-  <!-- 9 · La posterior responde -->
-  <section class="slide layout-metrics" aria-label="La posterior responde al problema causal">
+  <!-- 15 · Un modelo lineal en cm -->
+  <section class="slide layout-model" aria-label="Un modelo lineal en cm">
+      <div class="slide-header">
+        <h4>El modelo</h4>
+      </div>
+      <div class="slide-content">
+        <h2>Un modelo lineal en cm</h2>
+        <div class="model-layout-15">
+          <div class="model-dag">
+            <div class="dag">
+              <svg viewBox="0 0 400 300" aria-hidden="true">
+                <defs>
+                  <marker id="arrow-model-15" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(30,43,250,0.55)"></path>
+                  </marker>
+                </defs>
+                <line x1="90" y1="87" x2="166" y2="222" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-model-15)"></line>
+                <line x1="275" y1="87" x2="194" y2="222" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-model-15)"></line>
+                <line x1="288" y1="87" x2="288" y2="140" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-model-15)"></line>
+                <line x1="275" y1="197" x2="194" y2="224" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-model-15)"></line>
+              </svg>
+              <div class="dag-node" style="left:18%; top:20%;">H0</div>
+              <div class="dag-label side" style="left:26%; top:20%;">altura inicial</div>
+              <div class="dag-node solid" style="left:72%; top:20%;">T</div>
+              <div class="dag-label side" style="left:80%; top:20%;">tratamiento</div>
+              <div class="dag-node" style="left:72%; top:56.7%;">F</div>
+              <div class="dag-label side" style="left:80%; top:56.7%;">hongo</div>
+              <div class="dag-node" style="left:45%; top:83.3%;">H1</div>
+              <div class="dag-label side" style="left:53%; top:83.3%;">altura final</div>
+            </div>
+          </div>
+          <div class="model-right">
+            <div class="model-formulas model-formulas-large">
+              \[
+              \begin{aligned}
+              h1_i &\sim \mathrm{Normal}(\mu_i, \sigma) \\
+              \mu_i &= a + \beta_T T_i + \beta_H (h0_i - \overline{h0}) \\
+              a &\sim \mathrm{Normal}(\overline{h1}, 5) \\
+              \beta_T &\sim \mathrm{Normal}(0, 5) \\
+              \beta_H &\sim \mathrm{Normal}(0, 1) \\
+              \sigma &\sim \mathrm{HalfNormal}(5)
+              \end{aligned}
+              \]
+            </div>
+            <p class="model-footer"><strong>\(\beta_T\)</strong> es el cambio promedio en altura final para una planta tratada, ajustando por altura inicial. Está en cm, así que es directamente comparable con el ATE.</p>
+            <div class="model-conclusion-space" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  <!-- 15-2 · El modelo y la conclusión sobre F -->
+  <section class="slide layout-model" aria-label="Un modelo lineal en cm">
+      <div class="slide-header">
+        <h4>El modelo</h4>
+      </div>
+      <div class="slide-content">
+        <h2>Un modelo lineal en cm</h2>
+        <div class="model-layout-15">
+          <div class="model-dag">
+            <div class="dag">
+              <svg viewBox="0 0 400 300" aria-hidden="true">
+                <defs>
+                  <marker id="arrow-model-15b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(30,43,250,0.55)"></path>
+                  </marker>
+                </defs>
+                <line x1="90" y1="87" x2="166" y2="222" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-model-15b)"></line>
+                <line x1="275" y1="87" x2="194" y2="222" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-model-15b)"></line>
+                <line x1="288" y1="87" x2="288" y2="140" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-model-15b)"></line>
+                <line x1="275" y1="197" x2="194" y2="224" stroke="rgba(30,43,250,0.4)" stroke-width="2" marker-end="url(#arrow-model-15b)"></line>
+              </svg>
+              <div class="dag-node" style="left:18%; top:20%;">H0</div>
+              <div class="dag-label side" style="left:26%; top:20%;">altura inicial</div>
+              <div class="dag-node solid" style="left:72%; top:20%;">T</div>
+              <div class="dag-label side" style="left:80%; top:20%;">tratamiento</div>
+              <div class="dag-node" style="left:72%; top:56.7%;">F</div>
+              <div class="dag-label side" style="left:80%; top:56.7%;">hongo</div>
+              <div class="dag-node" style="left:45%; top:83.3%;">H1</div>
+              <div class="dag-label side" style="left:53%; top:83.3%;">altura final</div>
+            </div>
+          </div>
+          <div class="model-right">
+            <div class="model-formulas model-formulas-large">
+              \[
+              \begin{aligned}
+              h1_i &\sim \mathrm{Normal}(\mu_i, \sigma) \\
+              \mu_i &= a + \beta_T T_i + \beta_H (h0_i - \overline{h0}) \\
+              a &\sim \mathrm{Normal}(\overline{h1}, 5) \\
+              \beta_T &\sim \mathrm{Normal}(0, 5) \\
+              \beta_H &\sim \mathrm{Normal}(0, 1) \\
+              \sigma &\sim \mathrm{HalfNormal}(5)
+              \end{aligned}
+              \]
+            </div>
+            <p class="model-footer"><strong>\(\beta_T\)</strong> es el cambio promedio en altura final para una planta tratada, ajustando por altura inicial. Está en cm, así que es directamente comparable con el ATE.</p>
+            <p class="model-conclusion"><strong>No incluimos \(F\):</strong> es post-tratamiento y está en el camino causal.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  <!-- 16 · Marginales de la posterior -->
+  <section class="slide layout-figure" aria-label="Marginales de la posterior">
+      <div class="slide-header">
+        <h4>La posterior</h4>
+      </div>
+      <div class="slide-content">
+        <h2>Las marginales</h2>
+        <figure class="figure-wide">
+          <img src="figuras/trace_marginals.png" alt="Marginales posteriores de a, beta_T, beta_H y sigma">
+          <figcaption>Cada panel es una marginal de la posterior (MCMC). No mostramos las cadenas: solo la distribución. \(\beta_T=1.20\ \mathrm{cm}\ [0.69,1.71]\) al 89%.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+  <!-- 17 · La posterior responde -->
+  <section class="slide layout-metrics layout-metrics-plots" aria-label="La posterior responde al problema causal">
       <div class="slide-header">
         <h4>La posterior responde</h4>
-        <span class="tag">Volvemos al invernadero</span>
       </div>
       <div class="slide-content">
         <h2>Las tres preguntas, ahora con números</h2>
-        <p class="metrics-caption">Modelo sin <span class="code">F</span>: <span class="code">β<sub>T</sub> = 1.20 cm [0.69, 1.71]</span> (89% de credibilidad). El ATE frecuentista era <span class="code">1.05 cm [0.13, 1.95]</span>.</p>
+        <p class="metrics-caption">Modelo sin \(F\): \(\beta_T=1.20\ \mathrm{cm}\ [0.69,1.71]\) (89% de credibilidad).</p>
         <div class="metrics-row">
           <div class="metric-card">
-            <div class="metric-value">&gt; 0.99</div>
-            <div class="metric-label">P(ATE &gt; 0 | datos)</div>
-            <div class="metric-desc">Casi toda la posterior está arriba de cero: el tratamiento ayuda.</div>
+            <img class="metric-plot" src="figuras/posterior_ate_gt_0.png" alt="Posterior de ATE con área mayor a cero">
+            <div class="metric-value">1.000</div>
+            <div class="metric-label">\(P(\mathrm{ATE}>0\mid \text{datos})\)</div>
+            <div class="metric-desc">En esta simulación, ninguna muestra de la posterior quedó debajo de cero.</div>
           </div>
           <div class="metric-card">
+            <img class="metric-plot" src="figuras/posterior_ate_practical.png" alt="Posterior de ATE con área entre 0.5 y 1.5 cm">
             <div class="metric-value">0.81</div>
-            <div class="metric-label">P(0.5 &lt; ATE &lt; 1.5 cm | datos)</div>
+            <div class="metric-label">\(P(0.5<\mathrm{ATE}<1.5\text{ cm}\mid \text{datos})\)</div>
             <div class="metric-desc">La probabilidad de un efecto práctico, no solo distinto de cero.</div>
           </div>
           <div class="metric-card">
+            <img class="metric-plot" src="figuras/posterior_pp_at_least_5.png" alt="Predictiva posterior del número de plantas que superan 14 cm">
             <div class="metric-value">0.78</div>
-            <div class="metric-label">P(&ge;5 de 10 plantas nuevas tratadas &gt; 14 cm | datos)</div>
-            <div class="metric-desc">Predictiva posterior: integra la incertidumbre en β y en la altura inicial.</div>
+            <div class="metric-label">\(P(\ge 5\text{ de }10>14\text{ cm}\mid \text{datos})\)</div>
+            <div class="metric-desc">Predictiva posterior: integra la incertidumbre en los parámetros y en la altura inicial.</div>
           </div>
         </div>
-        <div class="note-strip"><strong>La diferencia:</strong> el ATE es un número; la posterior es una distribución. La predictiva responde por 10 plantas nuevas, no por el efecto promedio.</div>
-        <p class="quote-cite">Números reproducibles: simulación del libro con <span class="code">seed 1</span>. Detalle y sensibilidad a <span class="code">x</span> en el notebook.</p>
+        <div class="note-strip"><strong>El ATE nos daba otro número y otro intervalo:</strong> \(1.05\ \mathrm{cm}\ [0.13,1.95]\). No respondía ninguna de estas tres preguntas.</div>
       </div>
     </section>
 
-  <!-- 10 · Small world / large world -->
+  <!-- 17-2 · Los parámetros reales de la simulación -->
+  <section class="slide layout-metrics layout-metrics-plots" aria-label="La posterior responde al problema causal">
+      <div class="slide-header">
+        <h4>La posterior responde</h4>
+      </div>
+      <div class="slide-content">
+        <h2>Las tres preguntas, ahora con números</h2>
+        <p class="metrics-caption">Modelo sin \(F\): \(\beta_T=1.20\ \mathrm{cm}\ [0.69,1.71]\) (89% de credibilidad).</p>
+        <div class="metrics-row">
+          <div class="metric-card">
+            <img class="metric-plot" src="figuras/posterior_ate_gt_0.png" alt="Posterior de ATE con área mayor a cero">
+            <div class="metric-value">1.000</div>
+            <div class="metric-label">\(P(\mathrm{ATE}>0\mid \text{datos})\)</div>
+            <div class="metric-desc">En esta simulación, ninguna muestra de la posterior quedó debajo de cero.</div>
+          </div>
+          <div class="metric-card">
+            <img class="metric-plot" src="figuras/posterior_ate_practical.png" alt="Posterior de ATE con área entre 0.5 y 1.5 cm">
+            <div class="metric-value">0.81</div>
+            <div class="metric-label">\(P(0.5<\mathrm{ATE}<1.5\text{ cm}\mid \text{datos})\)</div>
+            <div class="metric-desc">La probabilidad de un efecto práctico, no solo distinto de cero.</div>
+          </div>
+          <div class="metric-card">
+            <img class="metric-plot" src="figuras/posterior_pp_at_least_5.png" alt="Predictiva posterior del número de plantas que superan 14 cm">
+            <div class="metric-value">0.78</div>
+            <div class="metric-label">\(P(\ge 5\text{ de }10>14\text{ cm}\mid \text{datos})\)</div>
+            <div class="metric-desc">Predictiva posterior: integra la incertidumbre en los parámetros y en la altura inicial.</div>
+          </div>
+        </div>
+        <div class="truth-panel"><strong>Los parámetros reales:</strong> \(h_0\sim N(10,2)\), \(T\) 50/50, \(P(F=1\mid T=0)=0.5\), \(P(F=1\mid T=1)=0.1\), \(h_1=h_0+N(5-3F,1)\). En el modelo sin \(F\): \(a=13.5\), \(\beta_T=1.2\), \(\beta_H=1\), \(\sigma=1\). El ATE verdadero es \(1.2\ \mathrm{cm}\); con \(F\), \(\beta_T\) verdadero \(=0\).</div>
+      </div>
+    </section>
+
+  <!-- 18 · Small world / large world -->
   <section class="slide layout-split" aria-label="Small world / large world">
       <div class="slide-header">
         <h4>Small world / large world</h4>
-        <span class="tag">El límite</span>
       </div>
       <div class="slide-content">
         <h2>Bayes es óptimo dentro del modelo; el mundo es más grande</h2>
@@ -1404,13 +2559,13 @@
               <li>El posterior no elige el DAG: lo elegís vos.</li>
               <li>El large world se demuestra, no se deduce.</li>
             </ul>
-            <div class="split-highlight">“The logical consistency of a model in the small world is no guarantee that it will be optimal in the large world. But it is certainly a warm comfort.”<cite>SR2</cite></div>
+            <div class="split-highlight">“The logical consistency of a model in the small world is no guarantee that it will be optimal in the large world. But it is certainly a warm comfort.”<cite>Statistical Rethinking</cite></div>
           </div>
         </div>
       </div>
     </section>
 
-  <!-- 11 · Q&A -->
+  <!-- 19 · Q&A -->
   <section class="slide layout-closing" aria-label="Q&A">
       <div class="closing-decoration"></div>
       <div class="closing-decoration-2"></div>
@@ -1420,11 +2575,10 @@
       <p class="closing-contact">Matias Moran &nbsp;&middot;&nbsp; Fundamentos matemáticos de la causalidad</p>
     </section>
 
-  <!-- 12 · Libros -->
+  <!-- 20 · Libros -->
   <section class="slide" aria-label="Libros y autores">
       <div class="slide-header">
         <h4>Libros y autores</h4>
-        <span class="tag">De dónde sale esto</span>
       </div>
       <div class="slide-content">
         <h2>Dos libros, dos estilos</h2>
@@ -1437,7 +2591,6 @@
               <li>Introducción aplicada, con código y ejemplos.</li>
               <li>Para aprender haciendo: prior → posterior → predicción.</li>
             </ul>
-            <p class="book-chapters">Caps. 1, 2, 4, 8</p>
           </div>
           <div class="book-card">
             <span class="book-tag">Statistical Rethinking</span>
@@ -1447,22 +2600,19 @@
               <li>Fundamentos conceptuales y DAGs.</li>
               <li>Para pensar por qué, no solo cómo.</li>
             </ul>
-            <p class="book-chapters">Caps. 1, 2, 3, 6</p>
           </div>
         </div>
-        <div class="split-highlight" style="margin-top:1.2rem;">Dos libros, dos estilos: uno te enseña a hacerlo; el otro, a pensar por qué.</div>
         <div class="note-strip">Las citas textuales de la charla salen de estos dos libros.</div>
       </div>
     </section>
 
-  <!-- 13 · Takeaways -->
+  <!-- 21 · Takeaways -->
   <section class="slide" aria-label="Key takeaways">
       <div class="slide-header">
         <h4>Key takeaways</h4>
-        <span class="tag">Para llevarse</span>
       </div>
       <div class="slide-content">
-        <h2>Cuatro ideas y un pendiente</h2>
+        <h2>Cuatro ideas y lo que queda</h2>
         <div class="takeaway-grid">
           <div class="takeaway-card">
             <div class="takeaway-num">01</div>
@@ -1481,16 +2631,22 @@
             <div class="takeaway-text"><strong>Óptimo en el small world; en el large world, el DAG manda.</strong></div>
           </div>
         </div>
-        <div class="split-highlight" style="margin-top:1.2rem;">“Bayes te da la pregunta que querés hacer. El DAG te dice si la pregunta es causal.”</div>
-        <div class="note-strip"><strong>No llegamos a ver:</strong> actualización secuencial, modelos jerárquicos, decision theory.</div>
+        <div class="takeaway-gaps">
+          <h3>No llegamos a ver</h3>
+          <ul>
+            <li>Actualización secuencial</li>
+            <li>Modelos jerárquicos</li>
+            <li>Decision theory</li>
+            <li>Markov chain Monte Carlo (MCMC)</li>
+          </ul>
+        </div>
       </div>
     </section>
 
-  <!-- 14 · Apéndice A: fairness -->
+  <!-- 22 · Apéndice A: fairness -->
   <section class="slide" aria-label="Apéndice A: fairness frecuentista">
       <div class="slide-header">
         <h4>Apéndice A</h4>
-        <span class="tag">Fairness frecuentista</span>
       </div>
       <div class="slide-content">
         <h2>No es que no se pueda; es que no es la opción por defecto</h2>
@@ -1530,11 +2686,10 @@
       </div>
     </section>
 
-  <!-- 15 · Apéndice B: exoplaneta -->
+  <!-- 23 · Apéndice B: exoplaneta -->
   <section class="slide layout-metrics" aria-label="Apéndice B: el prior cuando el dato es poco">
       <div class="slide-header">
         <h4>Apéndice B</h4>
-        <span class="tag">El prior cuando el dato es poco</span>
       </div>
       <div class="slide-content">
         <h2>Un exoplaneta, no la Tierra</h2>
@@ -1575,11 +2730,10 @@
       </div>
     </section>
 
-  <!-- 16 · Apéndice C: predictiva -->
+  <!-- 24 · Apéndice C: predictiva -->
   <section class="slide" aria-label="Apéndice C: predicción con la posterior">
       <div class="slide-header">
         <h4>Apéndice C</h4>
-        <span class="tag">Predicción</span>
       </div>
       <div class="slide-content">
         <h2>La receta que generaliza: samplear y contar</h2>
@@ -1600,10 +2754,44 @@
       </div>
     </section>
 
+  <!-- 25 · Apéndice D: dos modelos -->
+  <section class="slide" aria-label="Apéndice D: dos modelos">
+      <div class="slide-header">
+        <h4>Apéndice D</h4>
+      </div>
+      <div class="slide-content">
+        <h2>Dos modelos, una decisión causal</h2>
+        <div class="appendix-model-layout">
+          <div class="model-grid model-grid-stack">
+            <div class="model-card">
+              <div class="model-label">β<sub>T</sub> (cm) · sin F</div>
+              <div class="model-value">1.20</div>
+              <div class="model-interval">[0.69, 1.71]</div>
+              <div class="model-verdict good">el tratamiento funciona</div>
+            </div>
+            <div class="model-card">
+              <div class="model-label">β<sub>T</sub> (cm) · con F</div>
+              <div class="model-value">0.03</div>
+              <div class="model-interval">[-0.28, 0.35]</div>
+              <div class="model-verdict bad">“no funciona”</div>
+            </div>
+          </div>
+          <figure class="appendix-figure">
+            <img src="figuras/forest_bT.png" alt="Forest plot de beta_T con y sin F">
+            <figcaption>HDI 89% para \(\beta_T\): incluir \(F\) acerca el efecto a cero.</figcaption>
+          </figure>
+        </div>
+        <div class="split-highlight" style="margin-top:0.8rem;">Controlar \(F\) bloquea \(T\rightarrow F\rightarrow H1\). El DAG decide, no el fit.</div>
+        <p class="quote-cite">“a correct inference about the treatment still depends upon omitting the post-treatment variable.” — <strong>Statistical Rethinking</strong></p>
+        <div class="note-strip">No agregamos \(F\): es post-tratamiento y sesga el índice. Simulación del libro (100 plantas, <span class="code">seed 1</span>).</div>
+      </div>
+    </section>
+
+
 </div>
 
 <!-- Chrome -->
-<div class="slide-counter" aria-live="polite"><span id="current">1</span> / <span id="total">16</span></div>
+<div class="slide-counter" aria-live="polite"><span id="current">1</span> / <span id="total">33</span></div>
 <div class="keyboard-hint">← → &nbsp;·&nbsp; scroll &nbsp;·&nbsp; click para navegar</div>
 <div class="progress-bar" id="progress"></div>
 <div class="nav-controls">
